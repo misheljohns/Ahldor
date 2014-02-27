@@ -10,19 +10,33 @@
 
 /*---------------- Includes ---------------------------------*/
 
-
+#include <Servo.h>
 
 /*---------------- Module Defines ---------------------------*/
 
 //debug
-//#define DEBUGMODE 1
+#define DEBUG
+
+#ifdef DEBUG
+  #define DEBUG_PRINT(x)  Serial.println (x)
+  #define DEBUG_TIME()  time = micros();
+#else
+  #define DEBUG_PRINT(x)
+  #define DEBUG_TIME()
+#endif
+
 
 //states
 
-#define STATE_WAIT_TO_START 0
-#define STATE_FIND_THE_LINE 0
-#define STATE_FOLLOW_LINE 1
-#define STATE_TURNRIGHT 2
+#define STATE_WAIT_FOR_JOYSTICK 0
+#define STATE_WAIT_TO_START 1
+#define STATE_ROTATE_TO_SERVER 2
+#define STATE_FIND_THE_LINE 3
+#define STATE_ROTATE_TO_ALIGN 4
+#define STATE_FOLLOW_LINE 5
+#define STATE_MINE_SHOOT 6
+#define STATE_FIND_NEXT_EX 7
+#define STATE_TURNOFF 8
 
 //pins
 
@@ -33,62 +47,67 @@
 #define RWHEEL_ENABLE 11
 #define RWHEEL_BRAKE 8
 
-#define ROTATOR 5
+#define ROTATOR 10
 #define SHOOTER 6
-#define MINER 10
-
-#define MUX_IN A0
-#define MUX_SET0 A1
-#define MUX_SET1 A2
-#define MUX_SET2 A3
-#define MUX_SET3 A4
+#define MINER 5
 
 // free for now - pins 4,7
 
+
+
+
 /*------------------ Module Level Variables -----------------*/
 
-
-//#ifdef DEBUGMODE
 unsigned long time;
-//#endif
-unsigned char state;
+byte state;
 
 /*---------------- Arduino Main Functions -------------------*/
 void setup() {  // setup() function required for Arduino
  
-  //#ifdef DEBUGMODE
+  InitMux();
+  
+  //for debug stuff
   Serial.begin(9600);
-  Serial.println("Starting...");
+  Serial.println("Starting Intimidator.");
   time = micros();
-  //#endif
-  
-  
+   
   state = STATE_WAIT_TO_START;
-  
-  //time = micros();
-  digitalWrite(2,LOW);
-  analogWrite(3,100);
-  digitalWrite(4,HIGH);
-  analogWrite(5,100);
-  
 }
 
-void loop() {  // loop() function required for Arduino
-  int right  = analogRead(0);
-  int left = analogRead(1);
-  
+void loop() {  // loop() function required for Arduino  
   
   switch(state)
   {
+    case STATE_WAIT_FOR_JOYSTICK:
+      break;
     case STATE_WAIT_TO_START:
+    
+    //if startbutton pressed
+          //selectside()
+          
+      break;
+    case STATE_ROTATE_TO_SERVER:
+      break;
+    case STATE_FIND_THE_LINE:
+      break;
+    case STATE_ROTATE_TO_ALIGN:
+    
+    //if aligned
+      RotateToShoot();//align for first target so we're ready to shot when we get to the server
+      break;
+    case STATE_FOLLOW_LINE:
+      break;
+    case STATE_MINE_SHOOT:
+      break;
+    case STATE_FIND_NEXT_EX:
+      RotateToShoot();
+      //delayMicroseconds();//time to finish turning
+      break;
+    case STATE_TURNOFF:
+      //turn off all motors
       break;
   }
-  
-  
-  Serial.print(left);
-  Serial.print("  ");
-  Serial.println(right);    
-      
+       
  
 }
 
