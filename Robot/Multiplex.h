@@ -1,10 +1,15 @@
-/*
-#define MUX_IN A4 C4
-#define MUX_SET0 A3 C3
-#define MUX_SET1 A2 C2 
-#define MUX_SET2 A0 C0
-#define MUX_SET3 A1 C1
-*/
+#ifndef Multiplexer_h //because we include multiplexer in LineFind, and if this isn't there, there will be a multiple definition error
+#define Multiplexer_h
+
+/*---------------- Includes ---------------------------------*/
+
+#if defined(ARDUINO) && ARDUINO >= 100 
+#include "Arduino.h"  // if Arduino version 1.0 or later, include Arduino.h
+#else
+#include "WProgram.h"  // if Arduino version 22, include WProgram.h
+#endif
+
+#include "Defines.h"
 
 /*---------------- Module Variables -------------------------*/
 /*
@@ -45,9 +50,12 @@ void SelectIn(byte inp)
 {
   //PORTC = controlPins[inp];
   PORTC = inp;//faster to change wiring
+  __asm__ __volatile__ ("nop\n\t"); //wait one cycle (62.5ns) for input to settle before reading
 }
 
 byte ReadIn()
 {
   return bitRead(PINC, 4);
 }
+
+#endif //because we include multiplexer in LineFind, and if this isn't there, there will be a multiple definition error

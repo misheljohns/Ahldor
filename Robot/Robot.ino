@@ -10,24 +10,18 @@
 
 /*---------------- Includes ---------------------------------*/
 
-#include <Servo.h>
+#include "Defines.h"
+#include "BeaconSens.h"
+#include "Diagnostics.h"
+#include "Multiplex.h"
+#include "LineFind.h"
+#include "MineShoot.h"
+
+#include <Servo.h>//because apparently even though this is used in another file, it still needs to be here for the arduino compiler to find it
 
 /*---------------- Module Defines ---------------------------*/
 
-//debug
-#define DEBUG
-
-#ifdef DEBUG
-  #define DEBUG_PRINT(x)  Serial.println (x)
-  #define DEBUG_TIME()  time = micros();
-#else
-  #define DEBUG_PRINT(x)
-  #define DEBUG_TIME()
-#endif
-
-
 //states
-
 #define STATE_WAIT_FOR_JOYSTICK 0
 #define STATE_WAIT_TO_START 1
 #define STATE_ROTATE_TO_SERVER 2
@@ -38,27 +32,9 @@
 #define STATE_FIND_NEXT_EX 7
 #define STATE_TURNOFF 8
 
-//pins
-
-#define LWHEEL_DIR 12
-#define LWHEEL_ENABLE 3
-#define LWHEEL_BRAKE 9
-#define RWHEEL_DIR 13
-#define RWHEEL_ENABLE 11
-#define RWHEEL_BRAKE 8
-
-#define ROTATOR 10
-#define SHOOTER 6
-#define MINER 5
-
-// free for now - pins 4,7
-
-
-
 
 /*------------------ Module Level Variables -----------------*/
 
-unsigned long time;
 byte state;
 
 /*---------------- Arduino Main Functions -------------------*/
@@ -69,9 +45,10 @@ void setup() {  // setup() function required for Arduino
   //for debug stuff
   Serial.begin(9600);
   Serial.println("Starting Intimidator.");
-  time = micros();
    
-  state = STATE_WAIT_TO_START;
+  //state = STATE_WAIT_TO_START;
+  
+  state = STATE_FIND_THE_LINE; //for demo
 }
 
 void loop() {  // loop() function required for Arduino  
@@ -89,6 +66,12 @@ void loop() {  // loop() function required for Arduino
     case STATE_ROTATE_TO_SERVER:
       break;
     case STATE_FIND_THE_LINE:
+      if(RearSensor())
+      {
+        state = STATE_ROTATE_TO_ALIGN;                
+        digitalWrite(LWHEEL_ENABLE,LOW);
+        digitalWrite(RWHEEL_ENABLE,LOW);
+      }
       break;
     case STATE_ROTATE_TO_ALIGN:
     

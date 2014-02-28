@@ -1,3 +1,13 @@
+/*---------------- Includes ---------------------------------*/
+
+#if defined(ARDUINO) && ARDUINO >= 100 
+#include "Arduino.h"  // if Arduino version 1.0 or later, include Arduino.h
+#else
+#include "WProgram.h"  // if Arduino version 22, include WProgram.h
+#endif
+
+#include "Defines.h"
+#include <Servo.h>
 
 /*---------------- Module Defines ---------------------------*/
 
@@ -20,7 +30,7 @@
 /*------------------ Module Level Variables -----------------*/
 
 Servo rotator;
-byte count = 1;
+byte exchangeSelect = 1;
 unsigned int ex3,ex5,ex8;
 
 /*---------------- Module Functions -------------------------*/
@@ -28,7 +38,7 @@ unsigned int ex3,ex5,ex8;
 void InitMineShoot()
 {
   rotator.attach(10);
-  count = 1;
+  exchangeSelect = 1;
 }
 
 void selectside(byte a)
@@ -49,7 +59,7 @@ void selectside(byte a)
 
 void RotateToShoot()
 {
-  switch(count)
+  switch(exchangeSelect)
   {
     case EXCHANGE_3:
       rotator.writeMicroseconds(ex3);
@@ -65,7 +75,7 @@ void RotateToShoot()
       //victory code here (hopefully)
       break;
   }
-  count = count + 1;
+  exchangeSelect = exchangeSelect + 1;
 }
 
 
