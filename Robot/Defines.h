@@ -1,9 +1,12 @@
+/****************************************************
+ * Global definitions
+ * Prefix: DEFINES
+ ****************************************************/
 
-#if defined(ARDUINO) && ARDUINO >= 100 
-#include "Arduino.h"  // if Arduino version 1.0 or later, include Arduino.h
-#else
-#include "WProgram.h"  // if Arduino version 22, include WProgram.h
-#endif
+#ifndef DEFINES_H
+#define DEFINES_H
+
+#include "Arduino.h"
 
 //debug
 #define DEBUG
@@ -16,6 +19,8 @@
   #define DEBUG_TIME()
 #endif
 
+#define TRUE 1
+#define FALSE 0
 
 //pins
 #define LWHEEL_DIR 12
@@ -46,5 +51,7 @@
 
 /*---------------- Module Functions -------------------------*/
 
+
+#endif /* DEFINES_H */
 
 

@@ -1,14 +1,20 @@
+/****************************************************
+ * Diagnostics
+ * Prefix: DIAG
+ ****************************************************/
+
+#ifndef DIAG_H
+#define DIAG_H
+
 /*---------------- Includes ---------------------------------*/
 
-#if defined(ARDUINO) && ARDUINO >= 100 
-#include "Arduino.h"  // if Arduino version 1.0 or later, include Arduino.h
-#else
-#include "WProgram.h"  // if Arduino version 22, include WProgram.h
-#endif
-
+#include "Arduino.h"
 #include "Defines.h"
 
 /*---------------- Module Functions -------------------------*/
 
+void DIAG_Init() {
+  
+}
 
-
+#endif /* DIAG_H */

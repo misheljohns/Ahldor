@@ -1,11 +1,14 @@
+/****************************************************
+ * Drivetrain
+ * Prefix: Drive
+ ****************************************************/
+ 
+#ifndef DRIVE_H
+#define DRIVE_H
+
 /*---------------- Includes ---------------------------------*/
 
-#if defined(ARDUINO) && ARDUINO >= 100 
-#include "Arduino.h"  // if Arduino version 1.0 or later, include Arduino.h
-#else
-#include "WProgram.h"  // if Arduino version 22, include WProgram.h
-#endif
-
+#include "Arduino.h"
 #include "Defines.h"
 
 /*---------------- Module Functions -------------------------*/
@@ -21,5 +24,9 @@ void BrakeMotors()
   PORTB = PORTB | B00000011;//PB0 and PB1 set to HIGH
 }
   
+void DRIVE_Init() {
+  
+}
 
+#endif /* DRIVE_H */
 

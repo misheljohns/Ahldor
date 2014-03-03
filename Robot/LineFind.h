@@ -1,11 +1,14 @@
+/****************************************************
+ * Line Sensing (Tape)
+ * Prefix: LINE
+ ****************************************************/
+ 
+#ifndef LINE_H
+#define LINE_H
+
 /*---------------- Includes ---------------------------------*/
 
-#if defined(ARDUINO) && ARDUINO >= 100 
-#include "Arduino.h"  // if Arduino version 1.0 or later, include Arduino.h
-#else
-#include "WProgram.h"  // if Arduino version 22, include WProgram.h
-#endif
-
+#include "Arduino.h"
 #include "Defines.h"
 #include "Multiplex.h"
 
@@ -54,3 +57,8 @@ byte RightSensor()
   }
 }
 
+void LINE_Init() {
+  
+}
+
+#endif /* LINE_H */

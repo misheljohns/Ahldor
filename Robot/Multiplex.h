@@ -1,14 +1,14 @@
-#ifndef Multiplexer_h //because we include multiplexer in LineFind, and if this isn't there, there will be a multiple definition error
-#define Multiplexer_h
+/****************************************************
+ * Multiplexing
+ * Prefix: MUX
+ ****************************************************/
+ 
+#ifndef MUX_H
+#define MUX_H
 
 /*---------------- Includes ---------------------------------*/
 
-#if defined(ARDUINO) && ARDUINO >= 100 
-#include "Arduino.h"  // if Arduino version 1.0 or later, include Arduino.h
-#else
-#include "WProgram.h"  // if Arduino version 22, include WProgram.h
-#endif
-
+#include "Arduino.h"
 #include "Defines.h"
 
 /*---------------- Module Variables -------------------------*/
@@ -33,19 +33,6 @@ byte controlPins[] = {
 */
 /*---------------- Module Functions -------------------------*/
 
-
-void InitMux()
-{
-  //pinmodes for A0 to A3 - OUT
-  pinMode(A0, OUTPUT);
-  pinMode(A1, OUTPUT);
-  pinMode(A2, OUTPUT);
-  pinMode(A3, OUTPUT);
-  
-  //A4 - IN without pullup
-  pinMode(A4, INPUT);
-}
-
 void SelectIn(byte inp)
 {
   //PORTC = controlPins[inp];
@@ -58,4 +45,16 @@ byte ReadIn()
   return bitRead(PINC, 4);
 }
 
-#endif //because we include multiplexer in LineFind, and if this isn't there, there will be a multiple definition error
+void MUX_Init() {
+  
+  //pinmodes for A0 to A3 - OUT
+  pinMode(A0, OUTPUT);
+  pinMode(A1, OUTPUT);
+  pinMode(A2, OUTPUT);
+  pinMode(A3, OUTPUT);
+  
+  //A4 - IN without pullup
+  pinMode(A4, INPUT);
+}
+
+#endif /* MUX_H */

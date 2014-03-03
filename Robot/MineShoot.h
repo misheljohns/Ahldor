@@ -1,11 +1,14 @@
+/****************************************************
+ * Mining and shooting
+ * Prefix: MINE
+ ****************************************************/
+ 
+#ifndef MINE_H
+#define MINE_H
+
 /*---------------- Includes ---------------------------------*/
 
-#if defined(ARDUINO) && ARDUINO >= 100 
-#include "Arduino.h"  // if Arduino version 1.0 or later, include Arduino.h
-#else
-#include "WProgram.h"  // if Arduino version 22, include WProgram.h
-#endif
-
+#include "Arduino.h"
 #include "Defines.h"
 #include <Servo.h>
 
@@ -34,12 +37,6 @@ byte exchangeSelect = 1;
 unsigned int ex3,ex5,ex8;
 
 /*---------------- Module Functions -------------------------*/
-
-void InitMineShoot()
-{
-  rotator.attach(10);
-  exchangeSelect = 1;
-}
 
 void selectside(byte a)
 {
@@ -78,4 +75,10 @@ void RotateToShoot()
   exchangeSelect = exchangeSelect + 1;
 }
 
+void MINE_Init()
+{
+  rotator.attach(10);
+  exchangeSelect = 1;
+}
 
+#endif /* MINE_H */

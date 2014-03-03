@@ -2,22 +2,29 @@
   File:      Robot.ino 
   Contents:  This program runs the robot for the ME210 2014 
               Bitcoin Bonanza competition.
-  Notes:    Target: Arduino UNO R2
-            Arduino IDE version: 1.0.5
   
-  
+  Team:      Caitlin Clancy
+             Stefan Kowalski
+             Mishel Johns
+             Hayk Martirosyan
+
 **************************************************************/
 
 /*---------------- Includes ---------------------------------*/
 
+// outside libraries
+#include <Servo.h>
+#include "Timer.h"
+
+// modules
 #include "Defines.h"
+#include "CommandParser.h"
+#include "Multiplex.h"
 #include "BeaconSens.h"
 #include "Diagnostics.h"
-#include "Multiplex.h"
 #include "LineFind.h"
 #include "MineShoot.h"
-
-#include <Servo.h>//because apparently even though this is used in another file, it still needs to be here for the arduino compiler to find it
+#include "DriveTrain.h"
 
 /*---------------- Module Defines ---------------------------*/
 
@@ -32,27 +39,39 @@
 #define STATE_FIND_NEXT_EX 7
 #define STATE_TURNOFF 8
 
-
 /*------------------ Module Level Variables -----------------*/
 
+// timer library object
+Timer t;
+
+// which state is the robot in
 byte state;
 
 /*---------------- Arduino Main Functions -------------------*/
-void setup() {  // setup() function required for Arduino
- 
-  InitMux();
+
+void setup() {
   
-  //for debug stuff
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println("Starting Intimidator.");
-   
-  //state = STATE_WAIT_TO_START;
   
-  state = STATE_FIND_THE_LINE; //for demo
+  // Initializing each module
+  CMD_Init();
+  MUX_Init();
+  BEACON_Init();
+  DIAG_Init();
+  DRIVE_Init();
+  LINE_Init();
+  MINE_Init();
+
+  Serial.println("Modules initialized!");
+  
+  state = STATE_WAIT_TO_START;
+  
+  //state = STATE_FIND_THE_LINE; //for demo
 }
 
 void loop() {  // loop() function required for Arduino  
-  
+  CMD_Update();
   switch(state)
   {
     case STATE_WAIT_FOR_JOYSTICK:
@@ -93,9 +112,3 @@ void loop() {  // loop() function required for Arduino
        
  
 }
-
-/*---------------- Module Functions -------------------------*/
-
-
-
-

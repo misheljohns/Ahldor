@@ -1,13 +1,15 @@
+/****************************************************
+ * Beacon Sensing
+ * Prefix: BEACON
+ ****************************************************/
+
+#ifndef BEACON_H
+#define BEACON_H
+
 /*---------------- Includes ---------------------------------*/
 
-#if defined(ARDUINO) && ARDUINO >= 100 
-#include "Arduino.h"  // if Arduino version 1.0 or later, include Arduino.h
-#else
-#include "WProgram.h"  // if Arduino version 22, include WProgram.h
-#endif
-
+#include "Arduino.h"
 #include "Defines.h"
-
 
 /*---------------- Module Functions -------------------------*/
 
@@ -74,4 +76,8 @@ void StopFreqMeasure()
   detachInterrupt(0);
 }
 
+void BEACON_Init() {
+  
+}
 
+#endif /* BEACON_H */
