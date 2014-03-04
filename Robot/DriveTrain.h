@@ -73,7 +73,7 @@ void DRIVE_backward_full() {
   DRIVE_backward_right(255);
 }
 
-void DRIVE_Init() {
+void DRIVE_Init(Timer* t) {
   
   pinMode(LWHEEL_DIR, OUTPUT);
   pinMode(RWHEEL_DIR, OUTPUT);

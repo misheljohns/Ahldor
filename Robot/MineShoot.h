@@ -30,13 +30,40 @@
 #define EXCHANGE_5 2
 #define EXCHANGE_8 3
 
+// How often to push the button
+#define BUTTON_PUSH_RATE 550
+
+// How long after pushing in the button to pull out
+#define BUTTON_OUT_TIME 200
+
 /*------------------ Module Level Variables -----------------*/
 
 Servo rotator;
 byte exchangeSelect = 1;
 unsigned int ex3,ex5,ex8;
 
+static Timer* timer;
+int event_button_push;
+
 /*---------------- Module Functions -------------------------*/
+
+
+void MINE_button_release() {
+  Serial.println("Button released!");
+}
+
+void MINE_button_push() {
+  Serial.println("Button pushed!");
+  timer->after(BUTTON_OUT_TIME, MINE_button_release);
+}
+
+void MINE_start_pushing_button() {
+  event_button_push = timer->every(BUTTON_PUSH_RATE, MINE_button_push);
+}
+
+void MINE_stop_pushing_button() {
+  timer->stop(event_button_push);
+}
 
 void selectside(byte a)
 {
@@ -75,12 +102,21 @@ void RotateToShoot()
   exchangeSelect = exchangeSelect + 1;
 }
 
-void MINE_Init()
+void MINE_Init(Timer* t)
 {
+  
+  timer = t;
+  
   rotator.attach(ROTATOR);
   exchangeSelect = 1;
   
   Serial.println("MINE module initialized!");
+}
+
+void MINE_commands() {
+  COMM_check_command(String("MINE_PUSH_BUTTON"), MINE_button_push);
+  COMM_check_command(String("START_PUSHING_BUTTON"), MINE_start_pushing_button);
+  COMM_check_command(String("STOP_PUSHING_BUTTON"), MINE_stop_pushing_button);
 }
 
 #endif /* MINE_H */

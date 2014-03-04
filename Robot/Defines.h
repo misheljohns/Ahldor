@@ -22,7 +22,7 @@
 #define TRUE 1
 #define FALSE 0
 
-//pins
+// DriveTrain pins
 #define LWHEEL_DIR 12
 #define LWHEEL_ENABLE 3
 #define LWHEEL_BRAKE 9
@@ -30,24 +30,34 @@
 #define RWHEEL_ENABLE 11
 #define RWHEEL_BRAKE 8
 
+// MineShoot pins
 #define ROTATOR 10
 #define SHOOTER 6
 #define MINER 5
-// free for now - pins 4,7 (also 0,1 - serial)
 
 
-//Mux pins define
-//also for LineFind
-#define REAR_LINESENSOR 10
-#define FRONTR_LINESENSOR 11
-#define FRONTL_LINESENSOR 12
+//Mux pins
+#define MUX_S0 A0
+#define MUX_S1 A1
+#define MUX_S2 A2
+#define MUX_S3 A3
+#define MUX_IN A4
 
+// Mux input pins (not Arduino pins)
+#define MUX_MAP_SIDE_SWITCH ?
+#define MUX_ENABLE_SWITCH ?
+#define MUX_COIN_SENSOR ?
+#define MUX_FRONT_LINESENSOR 4
+#define MUX_BACKL_LINESENSOR 5
+#define MUX_BACKR_LINESENSOR 6
+#define MUX_WALL_SWITCH_LEFT 9
+#define MUX_WALL_SWITCH_RIGHT 10
 
-
-//BeaconSens 
-
+//BeaconSens pins 
 #define SERVER_BEACON 1
 #define EXCHANGE_BEACON 2
+
+// free for now - pins 4,7 (also 0,1 - serial)
 
 /*---------------- Module Functions -------------------------*/
 

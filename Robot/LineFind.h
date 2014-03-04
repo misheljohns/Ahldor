@@ -20,8 +20,8 @@
 
 byte RearSensor()
 {
-  SelectIn(REAR_LINESENSOR);
-  if(ReadIn() < LINESENSOR_THRESHOLD)
+  int rear_value = MUX_read(MUX_FRONT_LINESENSOR);
+  if(rear_value < LINESENSOR_THRESHOLD)
   {
     return 1;
   }
@@ -33,8 +33,8 @@ byte RearSensor()
 
 byte LeftSensor()
 {
-  SelectIn(FRONTL_LINESENSOR);
-  if(ReadIn() < LINESENSOR_THRESHOLD)
+  int frontl_value = MUX_read(MUX_BACKL_LINESENSOR);
+  if(frontl_value < LINESENSOR_THRESHOLD)
   {
     return 1;
   }
@@ -46,8 +46,8 @@ byte LeftSensor()
 
 byte RightSensor()
 {
-  SelectIn(FRONTR_LINESENSOR);
-  if(ReadIn() < LINESENSOR_THRESHOLD)
+  int frontr_value = MUX_read(MUX_BACKR_LINESENSOR);
+  if(frontr_value < LINESENSOR_THRESHOLD)
   {
     return 1;
   }
@@ -57,8 +57,12 @@ byte RightSensor()
   }
 }
 
-void LINE_Init() {
+void LINE_Init(Timer* t) {
   Serial.println("LINE module initialized!");
+}
+
+void LINE_commands() {
+  
 }
 
 #endif /* LINE_H */

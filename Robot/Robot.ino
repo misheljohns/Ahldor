@@ -28,7 +28,7 @@
 
 /*---------------- Module Defines ---------------------------*/
 
-//states
+// states
 #define STATE_WAIT_FOR_JOYSTICK 0
 #define STATE_WAIT_TO_START 1
 #define STATE_ROTATE_TO_SERVER 2
@@ -49,17 +49,41 @@ byte state;
 
 /*---------------- Arduino Main Functions -------------------*/
 
+void check_for_commands() {
+  COMM_Update();
+  if(COMM_has_new_command()) {
+    DRIVE_commands();
+    MINE_commands();
+    BEACON_commands();
+    DIAG_commands();
+    LINE_commands();
+    MUX_commands();
+  }
+}
+
+void mine() {
+  Serial.println("mined!");
+}
+int mine_timer;
+void stopMine() {
+  t.stop(mine_timer);
+}
+
 void setup() {
   
   // Initializing each module
-  COMM_Init();
-  MUX_Init();
-  BEACON_Init();
-  DIAG_Init();
-  DRIVE_Init();
-  LINE_Init();
-  MINE_Init();
-
+  COMM_Init(&t);
+  MUX_Init(&t);
+  BEACON_Init(&t);
+  DIAG_Init(&t);
+  DRIVE_Init(&t);
+  LINE_Init(&t);
+  MINE_Init(&t);
+  
+  t.every(COMM_UPDATE_RATE, check_for_commands);
+  
+  //mine_timer = t.every(500, mine);
+  //t.after(2600, stopMine);
   Serial.println("Modules initialized!");
   
   state = STATE_WAIT_TO_START;
@@ -68,14 +92,9 @@ void setup() {
 }
 
 void loop() {
-
+  
   // Update the timer
   t.update();
-  
-  COMM_Update();
-  if(COMM_has_new_command()) {
-    DRIVE_commands();
-  }
   
   switch(state)
   {

@@ -9,9 +9,12 @@
 /*---------------- Includes ---------------------------------*/
 
 #include "Arduino.h"
+#include "Timer.h"
 #include "Defines.h"
 
 /*---------------- Constants -------------------------*/
+
+#define COMM_UPDATE_RATE 20
 
 #define USB_BAUD 115200
 
@@ -22,7 +25,7 @@
 
 /*---------------- Function Declarations -------------------------*/
 
-void COMM_Init();
+void COMM_Init(Timer* t);
 void COMM_Update();
 void COMM_commands();
 

@@ -16,6 +16,8 @@ int last_arg = -1;
 
 int new_command = FALSE;
 
+Timer* timer;
+
 /*---------------- Private Functions -------------------------*/
 
 int COMM_has_new_command() {
@@ -126,10 +128,12 @@ void COMM_Update() {
   }
 }
 
-void COMM_Init() {
+void COMM_Init(Timer* t) {
   
   Serial.begin(USB_BAUD);
   
+  timer = t;
+   
   Serial.println("COMM module initialized!");
 }
 

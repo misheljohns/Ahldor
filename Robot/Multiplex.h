@@ -11,52 +11,77 @@
 #include "Arduino.h"
 #include "Defines.h"
 
+/*---------------- Module Constants -------------------------*/
+
+#define MUX_PRINT_RATE 50
+
 /*---------------- Module Variables -------------------------*/
-/*
-byte controlPins[] = {
-                  B00000000, //0 
-                  B00001000, //1
-                  B00000100, //2
-                  B00001100,
-                  B00000001,
-                  B00001001,
-                  B00000101,
-                  B00001101,
-                  B00000010,
-                  B00001010,
-                  B00000110,
-                  B00001110,
-                  B00000011,
-                  B00001011,
-                  B00000111,
-                  B00001111 }; //15
-*/
+
+//static Timer* timer_mux;
+
+int mux_print_pin;
+int event_mux_print;
+
 /*---------------- Module Functions -------------------------*/
 
-void SelectIn(byte inp)
+void MUX_select_in(byte inp)
 {
   //PORTC = controlPins[inp];
-  PORTC = inp;//faster to change wiring
-  __asm__ __volatile__ ("nop\n\t"); //wait one cycle (62.5ns) for input to settle before reading
+  PORTC = PORTC & B11110000;
+  PORTC = PORTC | inp;
+  
+  //wait one cycle (62.5ns) for input to settle before reading
+  __asm__ __volatile__ ("nop\n\t"); 
 }
 
-byte ReadIn()
-{
-  return bitRead(PINC, 4);
+int MUX_read(byte mux_pin) {
+  MUX_select_in(mux_pin);
+  return analogRead(MUX_IN);
 }
 
-void MUX_Init() {
+void MUX_print_raw() {
+  Serial.println("MUX pin " + String(mux_pin) + " has value " + String(MUX_read(mux_print_pin)));
+}
+
+void MUX_print(int mux_pin) {
+  mux_print_pin = mux_pin;
+  MUX_print_raw();
+}
+
+void MUX_print_start(int mux_pin) {
+  mux_print_pin = mux_pin;
+  event_mux_print = t->every(MUX_PRINT_RATE, MUX_print_raw);
+}
+
+void MUX_print_stop() {
+  t->stop(event_mux_print);
+}
+
+void print_0() {
+  Serial.println("4: " + String(MUX_read(4)) + " 5: " + String(MUX_read(5)) + " 6: " + String(MUX_read(6)));
+}
+
+void MUX_Init(Timer* t) {
   
   //pinmodes for A0 to A3 - OUT
-  pinMode(A0, OUTPUT);
-  pinMode(A1, OUTPUT);
-  pinMode(A2, OUTPUT);
-  pinMode(A3, OUTPUT);
+  pinMode(MUX_S0, OUTPUT);
+  pinMode(MUX_S1, OUTPUT);
+  pinMode(MUX_S2, OUTPUT);
+  pinMode(MUX_S3, OUTPUT);
   
   //A4 - IN without pullup
-  pinMode(A4, INPUT);
+  pinMode(MUX_IN, INPUT);
+  
+  timer = t;
+  //timer->every(50, print_0);
   
   Serial.println("MUX module initialized!");
+}
+
+void MUX_commands() {
+  COMM_check_command(String("MUX"), MUX_print);
+  COMM_check_command(String("MUX_START"), MUX_print_start);
+  COMM_check_command(String("MUX_STOP"), MUX_print_stop);
 }
 
 #endif /* MUX_H */

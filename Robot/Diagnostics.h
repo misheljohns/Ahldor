@@ -13,8 +13,12 @@
 
 /*---------------- Module Functions -------------------------*/
 
-void DIAG_Init() {
+void DIAG_Init(Timer* t) {
   Serial.println("DIAG module initialized!");
+}
+
+void DIAG_commands() {
+  
 }
 
 #endif /* DIAG_H */

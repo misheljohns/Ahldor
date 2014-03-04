@@ -76,8 +76,12 @@ void StopFreqMeasure()
   detachInterrupt(0);
 }
 
-void BEACON_Init() {
+void BEACON_Init(Timer* t) {
   Serial.println("BEACON module initialized!");
+}
+
+void BEACON_commands() {
+  
 }
 
 #endif /* BEACON_H */
