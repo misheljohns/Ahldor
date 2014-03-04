@@ -58,7 +58,7 @@ byte RightSensor()
 }
 
 void LINE_Init() {
-  
+  Serial.println("LINE module initialized!");
 }
 
 #endif /* LINE_H */

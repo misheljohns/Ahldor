@@ -77,8 +77,10 @@ void RotateToShoot()
 
 void MINE_Init()
 {
-  rotator.attach(10);
+  rotator.attach(ROTATOR);
   exchangeSelect = 1;
+  
+  Serial.println("MINE module initialized!");
 }
 
 #endif /* MINE_H */

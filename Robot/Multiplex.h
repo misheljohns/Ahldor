@@ -55,6 +55,8 @@ void MUX_Init() {
   
   //A4 - IN without pullup
   pinMode(A4, INPUT);
+  
+  Serial.println("MUX module initialized!");
 }
 
 #endif /* MUX_H */

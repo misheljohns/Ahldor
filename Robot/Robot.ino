@@ -18,7 +18,7 @@
 
 // modules
 #include "Defines.h"
-#include "CommandParser.h"
+#include "Communication.h"
 #include "Multiplex.h"
 #include "BeaconSens.h"
 #include "Diagnostics.h"
@@ -51,11 +51,8 @@ byte state;
 
 void setup() {
   
-  Serial.begin(115200);
-  Serial.println("Starting Intimidator.");
-  
   // Initializing each module
-  CMD_Init();
+  COMM_Init();
   MUX_Init();
   BEACON_Init();
   DIAG_Init();
@@ -70,8 +67,16 @@ void setup() {
   //state = STATE_FIND_THE_LINE; //for demo
 }
 
-void loop() {  // loop() function required for Arduino  
-  CMD_Update();
+void loop() {
+
+  // Update the timer
+  t.update();
+  
+  COMM_Update();
+  if(COMM_has_new_command()) {
+    DRIVE_commands();
+  }
+  
   switch(state)
   {
     case STATE_WAIT_FOR_JOYSTICK:

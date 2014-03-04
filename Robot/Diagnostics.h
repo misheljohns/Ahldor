@@ -14,7 +14,7 @@
 /*---------------- Module Functions -------------------------*/
 
 void DIAG_Init() {
-  
+  Serial.println("DIAG module initialized!");
 }
 
 #endif /* DIAG_H */
