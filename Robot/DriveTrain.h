@@ -12,6 +12,11 @@
 #include "Defines.h"
 #include "Communication.h"
 
+/*---------------- Module Constants -------------------------*/
+
+#define LEFT_OFFSET 20
+#define RIGHT_OFFSET 0
+
 /*---------------- Module Functions -------------------------*/
 
 void InitMotors()
@@ -25,28 +30,39 @@ void BrakeMotors()
   PORTB = PORTB | B00000011;//PB0 and PB1 set to HIGH
 }
 
+int clamp_v(int vel) {
+  int v = vel;
+  if(v > 255) v = 255;
+  if(v < 0) v = 0;
+  return v;
+}
+
 void DRIVE_forward_left(int vel) {
-  Serial.println("Left wheel forward at vel " + String(vel));
-  digitalWrite(LWHEEL_DIR, HIGH);
-  analogWrite(LWHEEL_ENABLE, vel);
+  int v = clamp_v(vel + LEFT_OFFSET);
+  Serial.println("Left wheel forward at vel " + String(v));
+  digitalWrite(LWHEEL_DIR, LOW);
+  analogWrite(LWHEEL_ENABLE, v);
 }
 
 void DRIVE_forward_right(int vel) {
-  Serial.println("Right wheel forward at vel " + String(vel));
-  digitalWrite(RWHEEL_DIR, LOW);
-  analogWrite(RWHEEL_ENABLE, vel);
+  int v = clamp_v(vel + RIGHT_OFFSET);
+  Serial.println("Right wheel forward at vel " + String(v));
+  digitalWrite(RWHEEL_DIR, HIGH);
+  analogWrite(RWHEEL_ENABLE, v);
 }
 
 void DRIVE_backward_left(int vel) {
-  Serial.println("Left wheel backward at vel " + String(vel));
-  digitalWrite(LWHEEL_DIR, LOW);
-  analogWrite(LWHEEL_ENABLE, vel);
+  int v = clamp_v(vel + LEFT_OFFSET);
+  Serial.println("Left wheel backward at vel " + String(v));
+  digitalWrite(LWHEEL_DIR, HIGH);
+  analogWrite(LWHEEL_ENABLE, v);
 }
 
 void DRIVE_backward_right(int vel) {
-  Serial.println("Right wheel forward at vel " + String(vel));
-  digitalWrite(RWHEEL_DIR, HIGH);
-  analogWrite(RWHEEL_ENABLE, vel);
+  int v = clamp_v(vel + RIGHT_OFFSET);
+  Serial.println("Right wheel forward at vel " + String(v));
+  digitalWrite(RWHEEL_DIR, LOW);
+  analogWrite(RWHEEL_ENABLE, v);
 }
 
 void DRIVE_forward(int vel) {
@@ -57,6 +73,16 @@ void DRIVE_forward(int vel) {
 void DRIVE_backward(int vel) {
   DRIVE_backward_left(vel);
   DRIVE_backward_right(vel);
+}
+
+void DRIVE_turn_left(int mag) {
+  DRIVE_forward_left(mag);
+  DRIVE_backward_right(mag);
+}
+
+void DRIVE_turn_right(int mag) {
+  DRIVE_backward_left(mag);
+  DRIVE_forward_right(mag);
 }
 
 void DRIVE_stop() {
@@ -79,15 +105,15 @@ void DRIVE_Init(Timer* t) {
   pinMode(RWHEEL_DIR, OUTPUT);
   pinMode(LWHEEL_ENABLE, OUTPUT);
   pinMode(RWHEEL_ENABLE, OUTPUT);
-  pinMode(LWHEEL_BRAKE, OUTPUT);
-  pinMode(RWHEEL_BRAKE, OUTPUT);
+  //pinMode(LWHEEL_BRAKE, OUTPUT);
+  //pinMode(RWHEEL_BRAKE, OUTPUT);
   
   digitalWrite(LWHEEL_DIR, LOW);
   digitalWrite(RWHEEL_DIR, LOW);
   analogWrite(LWHEEL_ENABLE, 0);
   analogWrite(RWHEEL_ENABLE, 0);
-  digitalWrite(LWHEEL_BRAKE, LOW);
-  digitalWrite(RWHEEL_BRAKE, LOW);
+  //digitalWrite(LWHEEL_BRAKE, LOW);
+  //digitalWrite(RWHEEL_BRAKE, LOW);
   
   Serial.println("DRIVE module initialized!");
 }
@@ -100,6 +126,8 @@ void DRIVE_commands() {
   COMM_check_command(String("DRIVE_BACKWARD_FULL"), DRIVE_backward_full);
   COMM_check_command(String("DRIVE_FORWARD"), DRIVE_forward);
   COMM_check_command(String("DRIVE_BACKWARD"), DRIVE_backward);
+  COMM_check_command(String("TURN_LEFT"), DRIVE_turn_left);
+  COMM_check_command(String("TURN_RIGHT"), DRIVE_turn_right);
 }
 
 #endif /* DRIVE_H */

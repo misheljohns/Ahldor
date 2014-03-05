@@ -47,17 +47,27 @@ Timer t;
 // which state is the robot in
 byte state;
 
+// if TRUE, beacon is to left and exchanges to right
+// if FALSE, beacon is to right and exchanges to left
+int map_left;
+
 /*---------------- Arduino Main Functions -------------------*/
 
+ void MAIN_commands() {
+   COMM_check_command(String("FIND_LINE"), start_finding_line);
+ }
+ 
 void check_for_commands() {
   COMM_Update();
   if(COMM_has_new_command()) {
+    COMM_commands();
     DRIVE_commands();
     MINE_commands();
     BEACON_commands();
     DIAG_commands();
     LINE_commands();
     MUX_commands();
+    MAIN_commands();
   }
 }
 
@@ -87,19 +97,23 @@ void setup() {
   Serial.println("Modules initialized!");
   
   state = STATE_WAIT_TO_START;
-  
-  //state = STATE_FIND_THE_LINE; //for demo
+}
+
+// temp, for line following
+void start_finding_line() {
+  map_left = FALSE;
+  Serial.println("Putting into STATE_FIND_THE_LINE!");
+  DRIVE_forward(120);
+  state = STATE_FIND_THE_LINE;
 }
 
 void loop() {
-  
+  //MUX_print_line();
   // Update the timer
   t.update();
   
   switch(state)
   {
-    case STATE_WAIT_FOR_JOYSTICK:
-      break;
     case STATE_WAIT_TO_START:
     
     //if startbutton pressed
@@ -109,24 +123,32 @@ void loop() {
     case STATE_ROTATE_TO_SERVER:
       break;
     case STATE_FIND_THE_LINE:
-      if(RearSensor())
-      {
-        state = STATE_ROTATE_TO_ALIGN;                
-        digitalWrite(LWHEEL_ENABLE,LOW);
-        digitalWrite(RWHEEL_ENABLE,LOW);
+      if(LINE_front())
+      {             
+        DRIVE_backward(255);
+        delay(100);
+        DRIVE_stop();
+        state = STATE_ROTATE_TO_ALIGN;   
       }
       break;
     case STATE_ROTATE_TO_ALIGN:
     
-    //if aligned
-      RotateToShoot();//align for first target so we're ready to shot when we get to the server
+      if(map_left == TRUE) {
+        DRIVE_turn_right(100);
+      } else if (map_left == FALSE) {
+        DRIVE_turn_left(100);
+      }
+      delay(300);
+      DRIVE_stop();
+      //if aligned
+      //MINE_rotate_to_shoot();//align for first target so we're ready to shot when we get to the server
       break;
     case STATE_FOLLOW_LINE:
       break;
     case STATE_MINE_SHOOT:
       break;
     case STATE_FIND_NEXT_EX:
-      RotateToShoot();
+      MINE_rotate_to_shoot();
       //delayMicroseconds();//time to finish turning
       break;
     case STATE_TURNOFF:
@@ -134,5 +156,7 @@ void loop() {
       break;
   }
        
- 
 }
+
+
+

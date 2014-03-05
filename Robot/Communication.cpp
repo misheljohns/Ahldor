@@ -73,8 +73,10 @@ static void COMM_parse_command(String command) {
   }
 }
 
+void(* resetFunc) (void) = 0;
 static void COMM_reset() {
   Serial.println("COMM module reset!");
+  resetFunc();
 }
 
 void COMM_check_command(String pCommand, void (*callback)(void)) {
@@ -140,5 +142,5 @@ void COMM_Init(Timer* t) {
 void COMM_commands() {
   
   // Commands
-  //COMM_check_command(String("RESET"), COMM_reset);
+  COMM_check_command(String("RESET"), COMM_reset);
 }

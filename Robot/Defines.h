@@ -22,19 +22,21 @@
 #define TRUE 1
 #define FALSE 0
 
+#define BEACON_INTERRUPT 2
+
 // DriveTrain pins
-#define LWHEEL_DIR 12
-#define LWHEEL_ENABLE 3
-#define LWHEEL_BRAKE 9
-#define RWHEEL_DIR 13
-#define RWHEEL_ENABLE 11
-#define RWHEEL_BRAKE 8
+#define RWHEEL_DIR 4
+#define RWHEEL_ENABLE 3
+//#define LWHEEL_BRAKE 9
+#define LWHEEL_DIR 7
+#define LWHEEL_ENABLE 5
+//#define RWHEEL_BRAKE 8
 
 // MineShoot pins
-#define ROTATOR 10
-#define SHOOTER 6
-#define MINER 5
-
+#define ROTATOR 6
+#define SHOOTER 9
+#define MINER_DIR 10
+#define MINER_ENABLE 11
 
 //Mux pins
 #define MUX_S0 A0
@@ -52,12 +54,12 @@
 #define MUX_BACKR_LINESENSOR 6
 #define MUX_WALL_SWITCH_LEFT 9
 #define MUX_WALL_SWITCH_RIGHT 10
+#define MUX_BEACON_LEFT 11
+#define MUX_BEACON_RIGHT 12
 
-//BeaconSens pins 
-#define SERVER_BEACON 1
-#define EXCHANGE_BEACON 2
-
-// free for now - pins 4,7 (also 0,1 - serial)
+// Beacon frequency (not pins)
+#define SERVER_BEACON 0
+#define EXCHANGE_BEACON 1
 
 /*---------------- Module Functions -------------------------*/
 
