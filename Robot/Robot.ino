@@ -123,27 +123,64 @@ void loop() {
     case STATE_ROTATE_TO_SERVER:
       break;
     case STATE_FIND_THE_LINE:
-      if(LINE_front())
-      {             
+    
+      if(LINE_front()) {             
         DRIVE_backward(255);
-        delay(100);
+        delay(80);
         DRIVE_stop();
-        state = STATE_ROTATE_TO_ALIGN;   
+        delay(100);
+        
+        if(map_left == TRUE) {
+          DRIVE_turn_right(100);
+        } else if (map_left == FALSE) {
+          DRIVE_turn_left(100);
+        }
+      
+        state = STATE_ROTATE_TO_ALIGN; 
+      Serial.println("going to STATE_ROTATE_TO_ALIGN;");  
       }
       break;
     case STATE_ROTATE_TO_ALIGN:
     
-      if(map_left == TRUE) {
-        DRIVE_turn_right(100);
-      } else if (map_left == FALSE) {
-        DRIVE_turn_left(100);
+      if(LINE_back_left()&&LINE_back_right()) {
+        DRIVE_stop();
+        delay(100);
+        DRIVE_backward(120);
+        state = STATE_FOLLOW_LINE;
+        Serial.println("going to STATE_FOLLOW_LINE;");  
       }
-      delay(300);
-      DRIVE_stop();
+      
       //if aligned
       //MINE_rotate_to_shoot();//align for first target so we're ready to shot when we get to the server
       break;
     case STATE_FOLLOW_LINE:
+      
+      static int vel = 120;
+      static int turn_mag = 0;
+      
+      if(!LINE_back_left()) turn_mag += 1;
+      if(!LINE_back_right()) turn_mag -= 1;
+      
+      if(!LINE_back_left() && !LINE_back_right()) {
+        Serial.println("Off the line!");
+      }
+      
+      DRIVE_backward_left(vel - turn_mag);
+      DRIVE_backward_right(vel + turn_mag);
+      Serial.println("back left: " + String(LINE_back_left()) + " back right: " + String(LINE_back_right()) + " Vel: " + String(vel) + " turn mag: " + String(turn_mag));
+      /*
+      if(!LINE_back_left())
+      {
+        DRIVE_backward_left(140);
+      }
+      else if(!LINE_back_right())
+      {
+        DRIVE_backward_right(140);
+      }*/
+      delay(10);
+      //add stuff to compensate for angle off, and for case where both sensors are off
+      
+      
       break;
     case STATE_MINE_SHOOT:
       break;

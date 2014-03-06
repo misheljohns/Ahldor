@@ -14,11 +14,12 @@
 
 /*---------------- Module Constants -------------------------*/
 
-#define LEFT_OFFSET 20
+#define LEFT_OFFSET 0
 #define RIGHT_OFFSET 0
 
 /*---------------- Module Functions -------------------------*/
 
+/*
 void InitMotors()
 {
   //brakes off
@@ -29,6 +30,7 @@ void BrakeMotors()
 {
   PORTB = PORTB | B00000011;//PB0 and PB1 set to HIGH
 }
+*/
 
 int clamp_v(int vel) {
   int v = vel;

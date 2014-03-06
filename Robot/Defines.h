@@ -46,9 +46,6 @@
 #define MUX_IN A4
 
 // Mux input pins (not Arduino pins)
-#define MUX_MAP_SIDE_SWITCH ?
-#define MUX_ENABLE_SWITCH ?
-#define MUX_COIN_SENSOR ?
 #define MUX_FRONT_LINESENSOR 4
 #define MUX_BACKL_LINESENSOR 5
 #define MUX_BACKR_LINESENSOR 6
@@ -56,6 +53,8 @@
 #define MUX_WALL_SWITCH_RIGHT 10
 #define MUX_BEACON_LEFT 11
 #define MUX_BEACON_RIGHT 12
+#define MUX_COIN_SENSOR 13
+#define MUX_ENABLE_SWITCH 14
 
 // Beacon frequency (not pins)
 #define SERVER_BEACON 0

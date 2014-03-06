@@ -47,6 +47,9 @@ int event_button_push;
 
 /*---------------- Module Functions -------------------------*/
 
+void MINE_has_coin() {
+  
+}
 
 void MINE_button_release() {
   Serial.println("Button released!");
