@@ -42,28 +42,28 @@ int clamp_v(int vel) {
 void DRIVE_forward_left(int vel) {
   int v = clamp_v(vel + LEFT_OFFSET);
   Serial.println("Left wheel forward at vel " + String(v));
-  digitalWrite(LWHEEL_DIR, LOW);
+  digitalWrite(LWHEEL_DIR, HIGH);
   analogWrite(LWHEEL_ENABLE, v);
 }
 
 void DRIVE_forward_right(int vel) {
   int v = clamp_v(vel + RIGHT_OFFSET);
   Serial.println("Right wheel forward at vel " + String(v));
-  digitalWrite(RWHEEL_DIR, HIGH);
+  digitalWrite(RWHEEL_DIR, LOW);
   analogWrite(RWHEEL_ENABLE, v);
 }
 
 void DRIVE_backward_left(int vel) {
   int v = clamp_v(vel + LEFT_OFFSET);
   Serial.println("Left wheel backward at vel " + String(v));
-  digitalWrite(LWHEEL_DIR, HIGH);
+  digitalWrite(LWHEEL_DIR, LOW);
   analogWrite(LWHEEL_ENABLE, v);
 }
 
 void DRIVE_backward_right(int vel) {
   int v = clamp_v(vel + RIGHT_OFFSET);
   Serial.println("Right wheel forward at vel " + String(v));
-  digitalWrite(RWHEEL_DIR, LOW);
+  digitalWrite(RWHEEL_DIR, HIGH);
   analogWrite(RWHEEL_ENABLE, v);
 }
 

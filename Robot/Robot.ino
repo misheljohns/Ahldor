@@ -51,6 +51,8 @@ byte state;
 // if FALSE, beacon is to right and exchanges to left
 int map_left;
 
+long t_previous = 0;
+
 /*---------------- Arduino Main Functions -------------------*/
 
  void MAIN_commands() {
@@ -103,7 +105,7 @@ void setup() {
 void start_finding_line() {
   map_left = FALSE;
   Serial.println("Putting into STATE_FIND_THE_LINE!");
-  DRIVE_forward(120);
+  DRIVE_forward(255);
   state = STATE_FIND_THE_LINE;
 }
 
@@ -126,7 +128,7 @@ void loop() {
     
       if(LINE_front()) {             
         DRIVE_backward(255);
-        delay(80);
+        delay(60);
         DRIVE_stop();
         delay(100);
         
@@ -141,20 +143,35 @@ void loop() {
       }
       break;
     case STATE_ROTATE_TO_ALIGN:
-    
+      Serial.println("front: " + String(MUX_read(MUX_FRONT_LINESENSOR)) + " back left: " + String(MUX_read(MUX_BACKL_LINESENSOR)) + " back right: " + String(MUX_read(MUX_BACKR_LINESENSOR)));
       if(LINE_back_left()&&LINE_back_right()) {
+        
         DRIVE_stop();
         delay(100);
+        
+        // Counter-rotate for faster braking
+        if(map_left == TRUE) {
+          DRIVE_turn_left(255);
+        } else if (map_left == FALSE) {
+          DRIVE_turn_right(255);
+        }
+        delay(100);
+        
         DRIVE_backward(120);
         state = STATE_FOLLOW_LINE;
         Serial.println("going to STATE_FOLLOW_LINE;");  
       }
+      
+      static long dt = micros() - t_previous;
+      Serial.println(dt);
+      t_previous = micros();
       
       //if aligned
       //MINE_rotate_to_shoot();//align for first target so we're ready to shot when we get to the server
       break;
     case STATE_FOLLOW_LINE:
       
+      /*
       static int vel = 120;
       static int turn_mag = 0;
       
@@ -168,15 +185,21 @@ void loop() {
       DRIVE_backward_left(vel - turn_mag);
       DRIVE_backward_right(vel + turn_mag);
       Serial.println("back left: " + String(LINE_back_left()) + " back right: " + String(LINE_back_right()) + " Vel: " + String(vel) + " turn mag: " + String(turn_mag));
-      /*
-      if(!LINE_back_left())
-      {
-        DRIVE_backward_left(140);
+      */
+      
+      if(LINE_back_left() && LINE_back_right()) {
+        DRIVE_backward_right(255);
+        DRIVE_backward_left(255);
+      } if(!LINE_back_left()) {
+        DRIVE_backward_right(225);
+        DRIVE_backward_left(255);
+      } else if(!LINE_back_right()) {
+        DRIVE_backward_right(255);
+        DRIVE_backward_left(225);
+      } else {
+        Serial.println("MISSED OFF THE LINE!!!!");
       }
-      else if(!LINE_back_right())
-      {
-        DRIVE_backward_right(140);
-      }*/
+      
       delay(10);
       //add stuff to compensate for angle off, and for case where both sensors are off
       
