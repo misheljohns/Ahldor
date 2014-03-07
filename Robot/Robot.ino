@@ -1,4 +1,4 @@
-/**************************************************************
+  /**************************************************************
   File:      Robot.ino 
   Contents:  This program runs the robot for the ME210 2014 
               Bitcoin Bonanza competition.
@@ -57,6 +57,7 @@ long t_previous = 0;
 
  void MAIN_commands() {
    COMM_check_command(String("FIND_LINE"), start_finding_line);
+   COMM_check_command(String("BEACON_SENSE"), start_beacon_sensing);
  }
  
 void check_for_commands() {
@@ -109,6 +110,15 @@ void start_finding_line() {
   state = STATE_FIND_THE_LINE;
 }
 
+// temp, for rotating to find the beacon and calculate side
+void start_beacon_sensing() {
+  Serial.println("Putting into STATE_ROTATE_TO_SERVER!");
+  //DRIVE_forward(255);
+  DRIVE_turn_right(80);
+  state = STATE_ROTATE_TO_SERVER;
+  InitFreqMeasure();  
+}
+
 void loop() {
   //MUX_print_line();
   // Update the timer
@@ -123,6 +133,28 @@ void loop() {
           
       break;
     case STATE_ROTATE_TO_SERVER:
+      if(IsInLine())
+      {
+        
+        // Counter-rotate for faster braking
+        DRIVE_turn_left(255);
+        delay(1);
+        //Serial.println("inline and reversed, :" + String(IsInLine()));
+        DRIVE_stop();
+        delay(100);
+        Serial.println("inline and reversed, stopped, 100 later :" + String(IsInLine()));
+        
+        //test, in the final code we'll have to test what beacon
+        state = TURNOFF;
+        /*
+        map_left = FALSE;
+        Serial.println("Putting into STATE_FIND_THE_LINE!");
+        DRIVE_forward(255);
+        state = STATE_FIND_THE_LINE;
+        */
+      }
+        
+
       break;
     case STATE_FIND_THE_LINE:
     
@@ -146,6 +178,7 @@ void loop() {
       Serial.println("front: " + String(MUX_read(MUX_FRONT_LINESENSOR)) + " back left: " + String(MUX_read(MUX_BACKL_LINESENSOR)) + " back right: " + String(MUX_read(MUX_BACKR_LINESENSOR)));
       if(LINE_back_left()&&LINE_back_right()) {
         
+        ///////////////////////////////////////////////////////////////////////Hayk, we shoudl remove this, why do we stop before we counter-rotate? we sould just directly counter rotate, that's faster.
         DRIVE_stop();
         delay(100);
         

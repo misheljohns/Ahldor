@@ -56,9 +56,10 @@
 #define MUX_COIN_SENSOR 13
 #define MUX_ENABLE_SWITCH 14
 
-// Beacon frequency (not pins)
-#define SERVER_BEACON 0
-#define EXCHANGE_BEACON 1
+  // Beacon frequency (not pins)
+  #define SERVER_BEACON 1
+  #define EXCHANGE_BEACON 2
+  #define UNKNOWN_BEACON_FREQ 255
 
 /*---------------- Module Functions -------------------------*/
 
