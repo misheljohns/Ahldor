@@ -170,6 +170,14 @@ void loop() {
         DRIVE_stop();
         delay(100);
         Serial.println("inline and reversed, stopped, 100ms later. Beacon :" + String(BeaconTypeDetected()));
+        delay(300);//optimize later
+        if(BeaconTypeDetected() != SERVER_BEACON)
+        {
+          //on to next beacon
+          DRIVE_turn_right(100);
+          delay(100);
+          break;
+        }
         
         // Turn more so that we go towards tape 
         //we'll leave this here until we're done with the  beacon sense to find side code... because we need to turn the servo to a side depending on which side we are on..
@@ -201,10 +209,10 @@ void loop() {
     case STATE_ROTATE_TO_ALIGN:
       Serial.println("front: " + String(MUX_read(MUX_FRONT_LINESENSOR)) + " back left: " + String(MUX_read(MUX_BACKL_LINESENSOR)) + " back right: " + String(MUX_read(MUX_BACKR_LINESENSOR)));
       if(LINE_back_left()&&LINE_back_right()) {
-        
+        /*
         DRIVE_stop();
         delay(100);
-        
+        */
         // Counter-rotate for faster braking
         if(map_left == TRUE) {
           DRIVE_turn_left(255);
@@ -274,10 +282,40 @@ void loop() {
       
       break;
     case STATE_MINE_SHOOT:
+    //temp for two/3 coins
+    delay(2000);
+    MINE_button_push();
+    delay(1000);
+    MINE_shoot;
+    delay(1000);
     
-    // temp code to send two coins
-      if(MINE_button_presses() >= 1)
+    MINE_button_push();
+    delay(1000);
+    MINE_button_push();
+    delay(1000);
+    MINE_shoot;
+    delay(1000);
     
+    MINE_button_push();
+    delay(1000);
+    MINE_button_push();
+    delay(1000);
+    MINE_button_push();
+    delay(1000);
+    MINE_shoot;
+    delay(1000);
+    
+    MINE_button_push();
+    delay(1000);
+    MINE_button_push();
+    delay(1000);
+    MINE_button_push();
+    delay(1000);
+    MINE_shoot;
+    delay(1000);
+    
+
+    state = STATE_TURNOFF;
     
       break;
     case STATE_FIND_NEXT_EX:

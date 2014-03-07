@@ -23,7 +23,7 @@
 
 #define EXCHANGE_8_ROT_B 1500
 #define EXCHANGE_5_ROT_B 1700
-#define EXCHANGE_3_ROT_B 1200
+#define EXCHANGE_3_ROT_B 1200  
 
 //order of shooting
 ///doing 8 first for the checkoff

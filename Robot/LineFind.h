@@ -40,7 +40,7 @@ void LINE_Init(Timer* t) {
   Serial.println("LINE module initialized!");
 }
 
-void LINE_AtServer()
+byte LINE_AtServer()
 {
   return (MUX_read(MUX_WALL_SWITCH_LEFT) && MUX_read(MUX_WALL_SWITCH_RIGHT));
 }
