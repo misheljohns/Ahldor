@@ -1,0 +1,4 @@
+- finding out which side we are on using the beacons
+- stop and start mining 
+- mining, shooting, turning, strategy
+- timer for end of 2 mins

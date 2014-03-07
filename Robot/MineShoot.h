@@ -26,9 +26,10 @@
 #define EXCHANGE_3_ROT_B 1200
 
 //order of shooting
-#define EXCHANGE_3 1
+///doing 8 first for the checkoff
+#define EXCHANGE_3 3
 #define EXCHANGE_5 2
-#define EXCHANGE_8 3
+#define EXCHANGE_8 1
 
 // How often to push the button
 #define BUTTON_PUSH_RATE 550
@@ -53,7 +54,7 @@
 Servo rotator;
 Servo miner;
 
-byte exchangeSelect = 1;
+byte exchangeSelect;
 unsigned int ex3,ex5,ex8;
 
 static Timer* timer;
@@ -62,6 +63,9 @@ int event_button_push;
 // Desired servo position, used for sweeping the servo
 int desired_servo_pos;
 int current_servo_pos;
+
+//number of pushes
+int button_presses;
 
 /*---------------- Module Functions -------------------------*/
 
@@ -93,7 +97,12 @@ void MINE_button_release() {
 void MINE_button_push() {
   Serial.println("Button pushed!");
   miner.write(BUTTON_IN);
+  button_presses += 1;
   timer->after(BUTTON_OUT_TIME, MINE_button_release);
+}
+
+void MINE_button_presses() {
+  return button_presses;
 }
 
 void MINE_start_pushing_button() {
@@ -104,7 +113,7 @@ void MINE_stop_pushing_button() {
   timer->stop(event_button_push);
 }
 
-void selectside(byte a)
+void MINE_selectside(byte a)
 {
   if(a)
  {
@@ -136,13 +145,13 @@ void MINE_rotate_to_shoot()
   switch(exchangeSelect)
   {
     case EXCHANGE_3:
-      rotator.writeMicroseconds(ex3);
+      MINE_turn_servo(ex3);
       break;
     case EXCHANGE_5:
-      rotator.writeMicroseconds(ex5);
+      MINE_turn_servo(ex5);
       break;
     case EXCHANGE_8:
-      rotator.writeMicroseconds(ex8);
+      MINE_turn_servo(ex8);
       break;
     case 4:
       //all exchanges down
@@ -166,6 +175,7 @@ void MINE_Init(Timer* t) {
   miner.write(BUTTON_OUT);
   
   exchangeSelect = 1;
+  button_presses = 0;
   
   t->every(SERVO_UPDATE_RATE, MINE_update_servo);
   

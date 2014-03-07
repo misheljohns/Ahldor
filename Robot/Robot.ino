@@ -128,7 +128,6 @@ void start_beacon_sensing() {
   //DRIVE_forward(255);
   DRIVE_turn_right(80);
   state = STATE_ROTATE_TO_SERVER;
-  InitFreqMeasure();  
 }
 
 
@@ -170,9 +169,10 @@ void loop() {
         //Serial.println("inline and reversed, :" + String(IsInLine()));
         DRIVE_stop();
         delay(100);
-        Serial.println("inline and reversed, stopped, 100 later :" + String(IsInLine()));
+        Serial.println("inline and reversed, stopped, 100ms later. Beacon :" + String(BeaconTypeDetected()));
         
-        // Turn more so that we go towards tape
+        // Turn more so that we go towards tape 
+        //we'll leave this here until we're done with the  beacon sense to find side code... because we need to turn the servo to a side depending on which side we are on..
         DRIVE_turn_right(100);
         delay(300);
         
@@ -253,15 +253,32 @@ void loop() {
         DRIVE_backward_right(255);
         DRIVE_backward_left(225);
       } else {
-        Serial.println("MISSED OFF THE LINE!!!!");
+        Serial.println("MISSED. OFF THE LINE!!!!");
       }
       
       delay(10);
       //add stuff to compensate for angle off, and for case where both sensors are off
       
+      //we've reached the promised land
+      if(LINE_AtServer())
+      {
+        if(!LINE_back_left() || !LINE_back_right())
+        {
+          Serial.println("Positioning off. Left: " + String(LINE_back_left()) + " Right: " + String(LINE_back_right()));
+        }
+        MINE_selectside(map_left);
+        MINE_turn_servo(int pos)
+        delay(100);
+        state = STATE_MINE_SHOOT;
+      }
       
       break;
     case STATE_MINE_SHOOT:
+    
+    // temp code to send two coins
+      if(MINE_button_presses() >= 1)
+    
+    
       break;
     case STATE_FIND_NEXT_EX:
       MINE_rotate_to_shoot();
