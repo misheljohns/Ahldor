@@ -1,4 +1,4 @@
-  /**************************************************************
+/**************************************************************
   File:      Robot.ino 
   Contents:  This program runs the robot for the ME210 2014 
               Bitcoin Bonanza competition.
@@ -55,8 +55,17 @@ long t_previous = 0;
 
 /*---------------- Arduino Main Functions -------------------*/
 
+void MAIN_print_enable_switch() {
+  Serial.println(MUX_read_digital(MUX_ENABLE_SWITCH));
+}
+
+int MAIN_enable_switch() {
+  return MUX_read_digital(MUX_ENABLE_SWITCH);
+}
+
  void MAIN_commands() {
    COMM_check_command(String("FIND_LINE"), start_finding_line);
+   COMM_check_command(String("ENABLED?"), MAIN_print_enable_switch);
    COMM_check_command(String("BEACON_SENSE"), start_beacon_sensing);
  }
  
@@ -100,11 +109,14 @@ void setup() {
   Serial.println("Modules initialized!");
   
   state = STATE_WAIT_TO_START;
+  
+  InitFreqMeasure();  
+  
+  map_left = FALSE;
 }
 
 // temp, for line following
 void start_finding_line() {
-  map_left = FALSE;
   Serial.println("Putting into STATE_FIND_THE_LINE!");
   DRIVE_forward(255);
   state = STATE_FIND_THE_LINE;
@@ -119,23 +131,39 @@ void start_beacon_sensing() {
   InitFreqMeasure();  
 }
 
+
 void loop() {
   //MUX_print_line();
   // Update the timer
   t.update();
+  //BEACON_print_detected();
+  //Serial.println(IsInLine());
+  /*if((state != STATE_WAIT_TO_START) && !MAIN_enable_switch()) {
+    DRIVE_stop();
+    MINE_stop_pushing_button();
+    MINE_turn_servo(1500);
+    MINE_stop_shoot();
+    
+    state = STATE_WAIT_TO_START;
+  }*/
   
   switch(state)
   {
     case STATE_WAIT_TO_START:
-    
+      if(MAIN_enable_switch()) {
+        start_beacon_sensing();
+      } else {
+        //Serial.println("Not enabled!");
+      }
     //if startbutton pressed
           //selectside()
           
       break;
     case STATE_ROTATE_TO_SERVER:
+    
       if(IsInLine())
       {
-        
+  
         // Counter-rotate for faster braking
         DRIVE_turn_left(255);
         delay(1);
@@ -144,18 +172,14 @@ void loop() {
         delay(100);
         Serial.println("inline and reversed, stopped, 100 later :" + String(IsInLine()));
         
-        //test, in the final code we'll have to test what beacon
-        state = TURNOFF;
-        /*
-        map_left = FALSE;
-        Serial.println("Putting into STATE_FIND_THE_LINE!");
-        DRIVE_forward(255);
-        state = STATE_FIND_THE_LINE;
-        */
-      }
+        // Turn more so that we go towards tape
+        DRIVE_turn_right(100);
+        delay(300);
         
+        //test, in the final code we'll have to test what beacon
+        start_finding_line();
+      }
 
-      break;
     case STATE_FIND_THE_LINE:
     
       if(LINE_front()) {             
@@ -178,7 +202,6 @@ void loop() {
       Serial.println("front: " + String(MUX_read(MUX_FRONT_LINESENSOR)) + " back left: " + String(MUX_read(MUX_BACKL_LINESENSOR)) + " back right: " + String(MUX_read(MUX_BACKR_LINESENSOR)));
       if(LINE_back_left()&&LINE_back_right()) {
         
-        ///////////////////////////////////////////////////////////////////////Hayk, we shoudl remove this, why do we stop before we counter-rotate? we sould just directly counter rotate, that's faster.
         DRIVE_stop();
         delay(100);
         

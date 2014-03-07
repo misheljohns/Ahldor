@@ -36,16 +36,49 @@
 // How long after pushing in the button to pull out
 #define BUTTON_OUT_TIME 200
 
+#define SERVO_POS_CENTER 1500
+#define SERVO_POS_3_EXCHANGE 1700
+#define SERVO_POS_5_EXCHANGE 1250
+#define SERVO_POS_8_EXCHANGE 1500
+
+#define SERVO_UPDATE_RATE 3
+
+#define SHOOT_TIME 1000
+
+#define BUTTON_IN 120
+#define BUTTON_OUT 150
+
 /*------------------ Module Level Variables -----------------*/
 
 Servo rotator;
+Servo miner;
+
 byte exchangeSelect = 1;
 unsigned int ex3,ex5,ex8;
 
 static Timer* timer;
 int event_button_push;
 
+// Desired servo position, used for sweeping the servo
+int desired_servo_pos;
+int current_servo_pos;
+
 /*---------------- Module Functions -------------------------*/
+
+void MINE_servo_write(int microseconds) {
+  rotator.writeMicroseconds(microseconds);
+}
+
+void MINE_turn_servo(int pos) {
+  desired_servo_pos = pos; 
+  Serial.println("New turning servo position: " + String(pos));
+}
+
+void MINE_update_servo() {
+  if(desired_servo_pos > current_servo_pos) current_servo_pos += 1;
+  if(desired_servo_pos < current_servo_pos) current_servo_pos -= 1;
+  MINE_servo_write(current_servo_pos);
+}
 
 void MINE_has_coin() {
   
@@ -53,14 +86,13 @@ void MINE_has_coin() {
 
 void MINE_button_release() {
   Serial.println("Button released!");
-  digitalWrite(MINER_DIR, HIGH);
-  analogWrite(MINER_ENABLE, 50);
+  miner.write(BUTTON_OUT);
+  
 }
 
 void MINE_button_push() {
   Serial.println("Button pushed!");
-  digitalWrite(MINER_DIR, LOW);
-  analogWrite(MINER_ENABLE, 50);
+  miner.write(BUTTON_IN);
   timer->after(BUTTON_OUT_TIME, MINE_button_release);
 }
 
@@ -88,18 +120,16 @@ void selectside(byte a)
  }
 }
 
-void MINE_servo_write(int microseconds) {
-  Serial.println("Writing to servo: " + String(microseconds));
-  rotator.writeMicroseconds(microseconds);
-}
-
-void MINE_shoot() {
-  digitalWrite(SHOOTER, HIGH);
-}
 
 void MINE_stop_shoot() {
   digitalWrite(SHOOTER, LOW);
 }
+
+void MINE_shoot() {
+  digitalWrite(SHOOTER, HIGH);
+  timer->after(SHOOT_TIME, MINE_stop_shoot);
+}
+
 
 void MINE_rotate_to_shoot()
 {
@@ -126,12 +156,18 @@ void MINE_Init(Timer* t) {
   
   timer = t;
   
+  pinMode(SHOOTER, OUTPUT);
+  
   rotator.attach(ROTATOR);
+  current_servo_pos = SERVO_POS_CENTER;
+  desired_servo_pos = current_servo_pos;
+  
+  miner.attach(MINER);
+  miner.write(BUTTON_OUT);
+  
   exchangeSelect = 1;
   
-  pinMode(SHOOTER, OUTPUT);
-  pinMode(MINER_DIR, OUTPUT);
-  pinMode(MINER_ENABLE, OUTPUT);
+  t->every(SERVO_UPDATE_RATE, MINE_update_servo);
   
   Serial.println("MINE module initialized!");
 }
@@ -141,7 +177,7 @@ void MINE_commands() {
   COMM_check_command(String("START_PUSHING_BUTTON"), MINE_start_pushing_button);
   COMM_check_command(String("STOP_PUSHING_BUTTON"), MINE_stop_pushing_button);
   
-  COMM_check_command(String("SERVO"), MINE_servo_write);
+  COMM_check_command(String("SERVO"), MINE_turn_servo);
   
   COMM_check_command(String("SHOOT"), MINE_shoot);
   COMM_check_command(String("STOP_SHOOT"), MINE_stop_shoot);

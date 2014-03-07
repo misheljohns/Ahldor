@@ -35,8 +35,7 @@
 // MineShoot pins
 #define ROTATOR 6
 #define SHOOTER 9
-#define MINER_DIR 10
-#define MINER_ENABLE 11
+#define MINER 11
 
 //Mux pins
 #define MUX_S0 A0
@@ -56,10 +55,10 @@
 #define MUX_COIN_SENSOR 13
 #define MUX_ENABLE_SWITCH 14
 
-  // Beacon frequency (not pins)
-  #define SERVER_BEACON 1
-  #define EXCHANGE_BEACON 2
-  #define UNKNOWN_BEACON_FREQ 255
+// Beacon frequency (not pins)
+#define SERVER_BEACON 1
+#define EXCHANGE_BEACON 2
+#define UNKNOWN_BEACON_FREQ 255
 
 /*---------------- Module Functions -------------------------*/
 
