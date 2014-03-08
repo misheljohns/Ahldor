@@ -46,7 +46,7 @@
 
 #define SHOOT_TIME 1000
 
-#define BUTTON_IN 120
+#define BUTTON_IN 90
 #define BUTTON_OUT 150
 
 /*------------------ Module Level Variables -----------------*/
@@ -101,7 +101,7 @@ void MINE_button_push() {
   timer->after(BUTTON_OUT_TIME, MINE_button_release);
 }
 
-void MINE_button_presses() {
+int MINE_button_presses() {
   return button_presses;
 }
 

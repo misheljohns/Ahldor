@@ -26,7 +26,7 @@ void count()
 {
   switch(count1++)
   {
-    case 100:
+    case 20:
       time2 = micros();
       break;
     case 0:
@@ -36,7 +36,7 @@ void count()
   inLine = 1;
 }
 
-byte IsInLine()
+byte BEACON_IsInLine()
 {
   byte tmp = inLine;
   inLine = 0;
@@ -59,7 +59,7 @@ byte BeaconDetected()
 {
   if(time2 != 0)
   {
-    freq = ((double)100000)/(double)(time2 - time);
+    freq = ((double)20000)/(double)(time2 - time);
     time2 = 0; 
     count1 = 0;
     return 1;
@@ -71,7 +71,7 @@ byte BeaconTypeDetected()
 {
   if(time2 != 0)
   {
-    freq = ((double)100000)/(double)(time2 - time);
+    freq = ((double)20000)/(double)(time2 - time);
     time2 = 0; 
     count1 = 0;
     if((freq > 2.9) && (freq < 3.1))
@@ -100,7 +100,7 @@ void BEACON_print_raw() {
   Serial.print(" has FREQ ");
   Serial.println(GetFreq());
 }
-
+    
 void BEACON_print_start() {
   //MUX_print_stop();
   event_beacon_print = timer_mux->every(100, BEACON_print_raw);

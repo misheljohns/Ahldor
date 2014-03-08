@@ -45,9 +45,9 @@
 #define MUX_IN A4
 
 // Mux input pins (not Arduino pins)
-#define MUX_FRONT_LINESENSOR 4
+#define MUX_FRONT_LINESENSOR 6
 #define MUX_BACKL_LINESENSOR 5
-#define MUX_BACKR_LINESENSOR 6
+#define MUX_BACKR_LINESENSOR 4
 #define MUX_WALL_SWITCH_LEFT 9
 #define MUX_WALL_SWITCH_RIGHT 10
 #define MUX_BEACON_LEFT 11

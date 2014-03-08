@@ -77,12 +77,12 @@ void DRIVE_backward(int vel) {
   DRIVE_backward_right(vel);
 }
 
-void DRIVE_turn_left(int mag) {
+void DRIVE_turn_right(int mag) {
   DRIVE_forward_left(mag);
   DRIVE_backward_right(mag);
 }
 
-void DRIVE_turn_right(int mag) {
+void DRIVE_turn_left(int mag) {
   DRIVE_backward_left(mag);
   DRIVE_forward_right(mag);
 }
@@ -130,6 +130,8 @@ void DRIVE_commands() {
   COMM_check_command(String("DRIVE_BACKWARD"), DRIVE_backward);
   COMM_check_command(String("TURN_LEFT"), DRIVE_turn_left);
   COMM_check_command(String("TURN_RIGHT"), DRIVE_turn_right);
+  COMM_check_command(String("DRIVE_FORWARD_RIGHT"), DRIVE_forward_right);
+  COMM_check_command(String("DRIVE_FORWARD_LEFT"), DRIVE_forward_left);
 }
 
 #endif /* DRIVE_H */

@@ -42,11 +42,15 @@ void LINE_Init(Timer* t) {
 
 byte LINE_AtServer()
 {
-  return (MUX_read(MUX_WALL_SWITCH_LEFT) && MUX_read(MUX_WALL_SWITCH_RIGHT));
+  return (MUX_read_digital(MUX_WALL_SWITCH_LEFT) && MUX_read_digital(MUX_WALL_SWITCH_RIGHT));
+}
+
+void LINE_PrintAtServer() {
+  Serial.println(LINE_AtServer());
 }
 
 void LINE_commands() {
-  
+  COMM_check_command(String("AT_SERVER"), LINE_PrintAtServer); 
 }
 
 #endif /* LINE_H */
