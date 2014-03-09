@@ -16,7 +16,7 @@
 /*---------------- Module Functions -------------------------*/
 
 void count();
-byte BEACON_IsInLine();
+//byte BEACON_IsInLine();
 void InitFreqMeasure();
 double GetFreq();
 byte BeaconDetected();

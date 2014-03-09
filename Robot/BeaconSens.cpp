@@ -31,15 +31,17 @@ void count()
       time = micros();
       break;
   }
-  inLine = 1;
+  //inLine = 1;
 }
 
+/* not using this anymore
 byte BEACON_IsInLine()
 {
   byte tmp = inLine;
   inLine = 0;
   return tmp;
 }
+*/
 
 void InitFreqMeasure()
 {
