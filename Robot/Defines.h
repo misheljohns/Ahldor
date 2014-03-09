@@ -9,8 +9,9 @@
 #include "Arduino.h"
 
 //debug
-#define DEBUG
+//#define DEBUG
 
+/*
 #ifdef DEBUG
   #define DEBUG_PRINT(x)  Serial.println (x)
   #define DEBUG_TIME()  time = micros();
@@ -18,6 +19,7 @@
   #define DEBUG_PRINT(x)
   #define DEBUG_TIME()
 #endif
+*/
 
 #define TRUE 1
 #define FALSE 0

@@ -51,12 +51,17 @@ byte state;
 // if FALSE, beacon is to right and exchanges to left
 int map_left;
 
+
+//count of button state
+int server_cost;
+int count_presses;
+
 long t_previous = 0;
 
 /*---------------- Arduino Main Functions -------------------*/
 
 void MAIN_print_enable_switch() {
-  Serial.println(MUX_read_digital(MUX_ENABLE_SWITCH));
+  Serial.println("Enable switch:" + String(MUX_read_digital(MUX_ENABLE_SWITCH)));
 }
 
 int MAIN_enable_switch() {
@@ -67,6 +72,7 @@ int MAIN_enable_switch() {
    COMM_check_command(String("FIND_LINE"), start_finding_line);
    COMM_check_command(String("ENABLED?"), MAIN_print_enable_switch);
    COMM_check_command(String("BEACON_SENSE"), start_beacon_sensing);
+   COMM_check_command(String("START_MINING"), start_mining); 
  }
  
 void check_for_commands() {
@@ -83,13 +89,15 @@ void check_for_commands() {
   }
 }
 
+/*
 void mine() {
   Serial.println("mined!");
 }
+
 int mine_timer;
 void stopMine() {
   t.stop(mine_timer);
-}
+}*/
 
 void setup() {
   
@@ -110,9 +118,11 @@ void setup() {
   
   state = STATE_WAIT_TO_START;
   
-  InitFreqMeasure();  
-  
+  //  InitFreqMeasure();  
+    
   map_left = TRUE;
+  server_cost = 0;
+  count_presses = 0;
 }
 
 // temp, for line following
@@ -126,11 +136,51 @@ void start_finding_line() {
 // temp, for rotating to find the beacon and calculate side
 void start_beacon_sensing() {
   Serial.println("Putting into STATE_ROTATE_TO_SERVER!");
+  InitFreqMeasure();  
   //DRIVE_forward(255);
   MINE_turn_servo(1580);
   delay(1000);
   DRIVE_turn_right(80);
   state = STATE_ROTATE_TO_SERVER;
+}
+
+void start_mining() {
+  Serial.println("Putting into STATE_MINE_SHOOT!");
+  if(!LINE_back_left() || !LINE_back_right())
+  {
+    Serial.println("Positioning off. Left: " + String(LINE_back_left()) + " Right: " + String(LINE_back_right()));
+  }
+  DRIVE_stop();
+  //MINE_selectside(map_left);
+ // MINE_turn_servo(1500);
+ // delay(100);
+  state = STATE_MINE_SHOOT;
+  server_cost = 1;
+  count_presses = 0;
+  MINE_coins();
+}
+
+void MINE_coins() {
+  if(count_presses < server_cost)
+  {
+    //press again
+    MINE_button_push();
+    count_presses += 1;
+    
+    //call to push again after 550s
+    t.after(550, MINE_coins);
+  }
+  else
+  {
+    //we've pressed enough times, time to shoot now
+    //it is already 550ms after the last push. Let's wait another second now.
+    t.after(1000, MINE_shoot);
+    
+    //run the coin pressing again, once shooting is done (2 sec wait)
+    t.after(3000, MINE_coins);
+    count_presses = 0;
+    server_cost += 1;
+  }
 }
 
 
@@ -153,7 +203,10 @@ void loop() {
   {
     case STATE_WAIT_TO_START:
       if(MAIN_enable_switch()) {
-        start_beacon_sensing();
+       start_beacon_sensing();
+       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////change for final
+       //  start_mining();
+         
       } else {
         //Serial.println("Not enabled!");
       }
@@ -189,7 +242,10 @@ void loop() {
         //delay(300);
         
         //test, in the final code we'll have to test what beacon
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
         start_finding_line();
+        //state = STATE_TURNOFF;
+        //BEACON_print_start();
       }
 
     case STATE_FIND_THE_LINE:
@@ -274,26 +330,23 @@ void loop() {
       //we've reached the promised land
       if(LINE_AtServer())
       {
-        if(!LINE_back_left() || !LINE_back_right())
-        {
-          Serial.println("Positioning off. Left: " + String(LINE_back_left()) + " Right: " + String(LINE_back_right()));
-        }
-        DRIVE_stop();
-        //MINE_selectside(map_left);
-       // MINE_turn_servo(1500);
-       // delay(100);
-        state = STATE_MINE_SHOOT;
-        t.after(500, MINE_button_push);
-        t.after(2000, MINE_shoot);
-        t.after(3000, MINE_button_push);
-        t.after(4000, MINE_button_push);
-        t.after(6000, MINE_shoot);
-        t.after(7000, MINE_shoot);
-        t.after(8000, MINE_shoot);
+        start_mining();
       }
       
       break;
     case STATE_MINE_SHOOT:
+    
+    /*
+    t.after(500, MINE_button_push);
+    t.after(2000, MINE_shoot);
+    t.after(3000, MINE_button_push);
+    t.after(4000, MINE_button_push);
+    t.after(6000, MINE_shoot);
+    t.after(7000, MINE_shoot);
+    t.after(8000, MINE_shoot);
+    */
+        
+        
     //temp for two/3 coins
     /*
     delay(500);
@@ -331,7 +384,7 @@ void loop() {
     delay(1000);
     */
 
-    state = STATE_TURNOFF;
+    //state = STATE_TURNOFF;
     
       break;
     case STATE_FIND_NEXT_EX:
