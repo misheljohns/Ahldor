@@ -49,7 +49,7 @@ byte state;
 
 // if TRUE, beacon is to left and exchanges to right
 // if FALSE, beacon is to right and exchanges to left
-int map_left;
+byte map_left;
 
 
 //count of button state
@@ -89,16 +89,6 @@ void check_for_commands() {
   }
 }
 
-/*
-void mine() {
-  Serial.println("mined!");
-}
-
-int mine_timer;
-void stopMine() {
-  t.stop(mine_timer);
-}*/
-
 void setup() {
   
   // Initializing each module
@@ -112,20 +102,17 @@ void setup() {
   
   t.every(COMM_UPDATE_RATE, check_for_commands);
   
-  //mine_timer = t.every(500, mine);
-  //t.after(2600, stopMine);
   Serial.println("Modules initialized!");
   
   state = STATE_WAIT_TO_START;
   
-  //  InitFreqMeasure();  
-    
+  InitFreqMeasure();    
   map_left = TRUE;
   server_cost = 0;
   count_presses = 0;
 }
 
-// temp, for line following
+
 void start_finding_line() {
   Serial.println("Putting into STATE_FIND_THE_LINE!");
   DRIVE_forward(255);
@@ -133,11 +120,9 @@ void start_finding_line() {
   state = STATE_FIND_THE_LINE;
 }
 
-// temp, for rotating to find the beacon and calculate side
+
 void start_beacon_sensing() {
   Serial.println("Putting into STATE_ROTATE_TO_SERVER!");
-  InitFreqMeasure();  
-  //DRIVE_forward(255);
   MINE_turn_servo(1580);
   delay(1000);
   DRIVE_turn_right(80);
@@ -151,9 +136,6 @@ void start_mining() {
     Serial.println("Positioning off. Left: " + String(LINE_back_left()) + " Right: " + String(LINE_back_right()));
   }
   DRIVE_stop();
-  //MINE_selectside(map_left);
- // MINE_turn_servo(1500);
- // delay(100);
   state = STATE_MINE_SHOOT;
   server_cost = 1;
   count_presses = 0;
@@ -167,7 +149,7 @@ void MINE_coins() {
     MINE_button_push();
     count_presses += 1;
     
-    //call to push again after 550s
+    //call to push again after 550s - Optimize this!
     t.after(550, MINE_coins);
   }
   else
@@ -185,47 +167,31 @@ void MINE_coins() {
 
 
 void loop() {
-  //MUX_print_line();
+  
   // Update the timer
   t.update();
-  //BEACON_print_detected();
-  //Serial.println(IsInLine());
-  /*if((state != STATE_WAIT_TO_START) && !MAIN_enable_switch()) {
-    DRIVE_stop();
-    MINE_stop_pushing_button();
-    MINE_turn_servo(1500);
-    MINE_stop_shoot();
     
-    state = STATE_WAIT_TO_START;
-  }*/
-  
   switch(state)
   {
     case STATE_WAIT_TO_START:
       if(MAIN_enable_switch()) {
        start_beacon_sensing();
-       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////change for final
-       //  start_mining();
-         
       } else {
         //Serial.println("Not enabled!");
       }
-    //if startbutton pressed
-          //selectside()
           
       break;
     case STATE_ROTATE_TO_SERVER:
       
       if(BeaconTypeDetected() != 0)
       {
-        
         // Counter-rotate for faster braking
         DRIVE_turn_left(255);
         delay(1);
-        //Serial.println("inline and reversed, :" + String(IsInLine()));
         DRIVE_stop();
-        delay(100);
-        Serial.println("inline and reversed, stopped, 100ms later. Beacon :" + String(BeaconTypeDetected()));
+        //delay(100);
+        //Serial.println("inline and reversed, stopped, 100ms later. Beacon :" + String(BeaconTypeDetected()));
+        
         //delay(300);//optimize later
         /*
         if(BeaconTypeDetected() != SERVER_BEACON)
@@ -236,16 +202,12 @@ void loop() {
           break;
         }*/
         
-        // Turn more so that we go towards tape 
-        //we'll leave this here until we're done with the  beacon sense to find side code... because we need to turn the servo to a side depending on which side we are on..
-        //DRIVE_turn_right(100);
-        //delay(300);
         
-        //test, in the final code we'll have to test what beacon
-      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
+        //test, in the final code we'll have to test what side we are on
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      
+      
         start_finding_line();
-        //state = STATE_TURNOFF;
-        //BEACON_print_start();
       }
 
     case STATE_FIND_THE_LINE:
@@ -269,10 +231,6 @@ void loop() {
     case STATE_ROTATE_TO_ALIGN:
       Serial.println("front: " + String(MUX_read(MUX_FRONT_LINESENSOR)) + " back left: " + String(MUX_read(MUX_BACKL_LINESENSOR)) + " back right: " + String(MUX_read(MUX_BACKR_LINESENSOR)));
       if(LINE_back_left()&&LINE_back_right()) {
-        /*
-        DRIVE_stop();
-        delay(100);
-        */
         // Counter-rotate for faster braking
         if(map_left == TRUE) {
           DRIVE_turn_left(255);
@@ -285,31 +243,10 @@ void loop() {
         state = STATE_FOLLOW_LINE;
         Serial.println("going to STATE_FOLLOW_LINE;");  
       }
-      
-      //static long dt = micros() - t_previous;
-      //Serial.println(dt);
-      //t_previous = micros();
-      
-      //if aligned
-      //MINE_rotate_to_shoot();//align for first target so we're ready to shot when we get to the server
       break;
+      
+      
     case STATE_FOLLOW_LINE:
-      
-      /*
-      static int vel = 120;
-      static int turn_mag = 0;
-      
-      if(!LINE_back_left()) turn_mag += 1;
-      if(!LINE_back_right()) turn_mag -= 1;
-      
-      if(!LINE_back_left() && !LINE_back_right()) {
-        Serial.println("Off the line!");
-      }
-      
-      DRIVE_backward_left(vel - turn_mag);
-      DRIVE_backward_right(vel + turn_mag);
-      Serial.println("back left: " + String(LINE_back_left()) + " back right: " + String(LINE_back_right()) + " Vel: " + String(vel) + " turn mag: " + String(turn_mag));
-      */
       
       if(LINE_back_left() && LINE_back_right()) {
         DRIVE_backward_right(255);
@@ -322,10 +259,9 @@ void loop() {
         DRIVE_backward_left(225);
       } else {
         Serial.println("MISSED. OFF THE LINE!!!!");
+        //the distance is short enough that we dont have to worry too much about the case where both sensors are off - hardcoding should work
       }
       
-      //delay(10);
-      //add stuff to compensate for angle off, and for case where both sensors are off
       
       //we've reached the promised land
       if(LINE_AtServer())
@@ -335,56 +271,13 @@ void loop() {
       
       break;
     case STATE_MINE_SHOOT:
-    
-    /*
-    t.after(500, MINE_button_push);
-    t.after(2000, MINE_shoot);
-    t.after(3000, MINE_button_push);
-    t.after(4000, MINE_button_push);
-    t.after(6000, MINE_shoot);
-    t.after(7000, MINE_shoot);
-    t.after(8000, MINE_shoot);
-    */
+      //////////////////////////////////////////////////////////////untested/////////////////////////////////
+      if(BeaconTypeDetected() == 0)
+      {
+        ///rotate to next beacon, pause 
         
-        
-    //temp for two/3 coins
-    /*
-    delay(500);
-    t.after(2000, MINE_button_push);
-    MINE_button_push();
-    delay(2000);
-    MINE_shoot();
-    delay(1000);
-    
-    MINE_button_push();
-    delay(1000);
-    MINE_button_push();
-    delay(1000);
-    MINE_button_push();
-    delay(2000);
-    MINE_shoot();
-    delay(1000);*/
-    /*
-    MINE_button_push();
-    delay(1000);
-    MINE_button_push();
-    delay(1000);
-    MINE_button_push();
-    delay(1000);
-    MINE_shoot;
-    delay(1000);
-    
-    MINE_button_push();
-    delay(1000);
-    MINE_button_push();
-    delay(1000);
-    MINE_button_push();
-    delay(1000);
-    MINE_shoot;
-    delay(1000);
-    */
-
-    //state = STATE_TURNOFF;
+        //!!!!How do you clear timers when you set a t.after?
+      }
     
       break;
     case STATE_FIND_NEXT_EX:

@@ -84,6 +84,14 @@ byte BeaconTypeDetected()
   else return 0;
 }
 
+//so that a few random innterrupt triggers while rotating can be cleared
+void ResetFreqMeasure()
+{
+  freq = 0;
+  count1 = 0;
+  time2 = 0; 
+}
+
 void StopFreqMeasure()
 {
   detachInterrupt(0);  
@@ -96,7 +104,7 @@ void BEACON_Init(Timer* t) {
 
 void BEACON_print_raw() {
   Serial.print("BEACON TYPE ");
-    Serial.print(BeaconTypeDetected());
+  Serial.print(BeaconTypeDetected());
   Serial.print(" has FREQ ");
   Serial.println(GetFreq());
 }

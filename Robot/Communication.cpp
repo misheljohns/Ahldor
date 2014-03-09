@@ -120,13 +120,12 @@ void COMM_Update() {
   if(Serial.available()) {
     char c = (char)Serial.read();
     Serial.println(c);//prints
-    Serial.println(usb_rx_buffer);//prints the initialvalue
+    Serial.println(usb_rx_buffer);//prints the initial value before it gets corrupted
     Serial.println(String(c));//fails, does not print anything.
     usb_rx_buffer = usb_rx_buffer + c;//corrupts usb_rx_buffer
     Serial.print("USB buffer increased:");
     Serial.print(usb_rx_buffer);//doesn't print anything
-    Serial.println(":3");
-    
+    Serial.println(":here");
     int end_command_index = usb_rx_buffer.indexOf(END_COMMAND);
     
     if(end_command_index != -1) {
@@ -135,7 +134,7 @@ void COMM_Update() {
       usb_rx_buffer = usb_rx_buffer.substring(end_command_index+1);
       COMM_parse_command(command);      
     }
-    Serial.println("bleh");
+    Serial.println("after the if. i'm guessing the command has not been parsed.");
   }
 }
 

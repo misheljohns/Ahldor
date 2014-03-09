@@ -1,4 +1,12 @@
+- FIXING the comm module
 - finding out which side we are on using the beacons
-- stop and start mining 
-- mining, shooting, turning, strategy
+	- fix beacon sensing code to measure frequencies accurately (some code is interfering)
+	- then we can just use BeaconTypeDetected to know which beacon we have.
+- strategy against a faster shooter bot
 - timer for end of 2 mins
+- make sure the beacon sensors work from the shooting position
+- fix shooter friction problems
+- fix beacon senser on rotating part permanently
+- tiny side wall on the shooter
+- Optimize code for speed (we need every edge we can get against the other shooter)
+- I think the rotate to align overshoots a tiny bit

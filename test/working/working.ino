@@ -6,6 +6,7 @@ String usb_rx_buffer = "";
 volatile int count1;
 volatile unsigned long time, time2;
 Timer t;
+Servo miner;
 
 void setup()
 {
@@ -13,6 +14,8 @@ void setup()
   Serial.println("starting....");
   InitFreqMeasure();
   t.every(20, check_for_commands);
+  miner.attach(11);
+  miner.write(190);
 }
 
 void loop()
