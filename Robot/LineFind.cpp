@@ -5,7 +5,7 @@
 
 /*---------------- Includes ---------------------------------*/
 
-#include "LineFInd.h"
+#include "LineFind.h"
 
 
 /*---------------- Module Functions -------------------------*/

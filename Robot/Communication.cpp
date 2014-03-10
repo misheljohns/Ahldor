@@ -6,11 +6,10 @@
 /*---------------- Includes ---------------------------------*/
 
 #include "Communication.h"
-//#include <WString.h>
 
 /*---------------- Private Variables -------------------------*/
 
-String usb_rx_buffer = "test 100\n";///////////////////////////////////////////////////////////////////for test, change!!!!!!!!!!!!!!!!!!!!!!!//////////////////
+String usb_rx_buffer = "";
 
 String last_command = String();
 int last_arg = -1;
@@ -118,23 +117,16 @@ void COMM_Update() {
   new_command = FALSE;
   
   if(Serial.available()) {
-    char c = (char)Serial.read();
-    Serial.println(c);//prints
-    Serial.println(usb_rx_buffer);//prints the initial value before it gets corrupted
-    Serial.println(String(c));//fails, does not print anything.
-    usb_rx_buffer = usb_rx_buffer + c;//corrupts usb_rx_buffer
-    Serial.print("USB buffer increased:");
-    Serial.print(usb_rx_buffer);//doesn't print anything
-    Serial.println(":here");
+    usb_rx_buffer = usb_rx_buffer + String((char)Serial.read());
+    //Serial.println("USB buffer increased: " + usb_rx_buffer);
+    
     int end_command_index = usb_rx_buffer.indexOf(END_COMMAND);
     
     if(end_command_index != -1) {
-      Serial.print("Not getting in here because the buffer is shot.");
       String command = usb_rx_buffer.substring(0, end_command_index);
       usb_rx_buffer = usb_rx_buffer.substring(end_command_index+1);
-      COMM_parse_command(command);      
+      COMM_parse_command(command);
     }
-    Serial.println("after the if. i'm guessing the command has not been parsed.");
   }
 }
 
@@ -152,3 +144,4 @@ void COMM_commands() {
   // Commands
   COMM_check_command(String("RESET"), COMM_reset);
 }
+

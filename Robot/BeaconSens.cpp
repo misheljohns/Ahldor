@@ -17,7 +17,6 @@ double freq;
 byte inLine;
 static Timer* timer_beacon;
 
-
 int event_beacon_print;
 
 void count()
@@ -45,6 +44,7 @@ byte BEACON_IsInLine()
 
 void InitFreqMeasure()
 {
+  Serial.println("Freq measure init!");
   pinMode(2, INPUT);
   attachInterrupt(0, count, RISING);
   count1 = 0;
@@ -99,8 +99,10 @@ void StopFreqMeasure()
 
 void BEACON_Init(Timer* t) {
   Serial.println("BEACON module initialized!");
+  InitFreqMeasure();
+  
+  timer_beacon = t;
 }
-
 
 void BEACON_print_raw() {
   Serial.print("BEACON TYPE ");
@@ -108,16 +110,16 @@ void BEACON_print_raw() {
   Serial.print(" has FREQ ");
   Serial.println(GetFreq());
 }
-    
+
 void BEACON_print_start() {
   //MUX_print_stop();
+  Serial.println("Beacon start!");
   event_beacon_print = timer_beacon->every(100, BEACON_print_raw);
 }
 
 void BEACON_print_stop() {
   timer_beacon->stop(event_beacon_print);
 }
-
 
 void BEACON_commands() {
   COMM_check_command(String("BEACON_START"), BEACON_print_start);

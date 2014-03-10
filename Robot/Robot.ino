@@ -21,7 +21,6 @@
 #include "Communication.h"
 #include "Multiplex.h"
 #include "BeaconSens.h"
-#include "Diagnostics.h"
 #include "LineFind.h"
 #include "MineShoot.h"
 #include "DriveTrain.h"
@@ -82,7 +81,6 @@ void check_for_commands() {
     DRIVE_commands();
     MINE_commands();
     BEACON_commands();
-    DIAG_commands();
     LINE_commands();
     MUX_commands();
     MAIN_commands();
@@ -95,7 +93,6 @@ void setup() {
   COMM_Init(&t);
   MUX_Init(&t);
   BEACON_Init(&t);
-  DIAG_Init(&t);
   DRIVE_Init(&t);
   LINE_Init(&t);
   MINE_Init(&t);
@@ -105,8 +102,7 @@ void setup() {
   Serial.println("Modules initialized!");
   
   state = STATE_WAIT_TO_START;
-  
-  InitFreqMeasure();    
+      
   map_left = TRUE;
   server_cost = 0;
   count_presses = 0;
