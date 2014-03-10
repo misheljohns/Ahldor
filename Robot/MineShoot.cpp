@@ -54,10 +54,10 @@ void MINE_button_release() {
 }
 
 void MINE_button_push() {
-  Serial.println("Button pushed!");
   miner.write(BUTTON_IN);
   button_presses += 1;
   timer->after(BUTTON_OUT_TIME, MINE_button_release);
+  Serial.println("Button pushed!");
 }
 
 int MINE_button_presses() {
@@ -142,9 +142,9 @@ void MINE_Init(Timer* t) {
 }
 
 void MINE_commands() {
-  COMM_check_command(String("MINE_PUSH_BUTTON"), MINE_button_push);
-  COMM_check_command(String("START_PUSHING_BUTTON"), MINE_start_pushing_button);
-  COMM_check_command(String("STOP_PUSHING_BUTTON"), MINE_stop_pushing_button);
+  COMM_check_command(String("PUSH"), MINE_button_push);
+  COMM_check_command(String("START_PUSHING"), MINE_start_pushing_button);
+  COMM_check_command(String("STOP_PUSHING"), MINE_stop_pushing_button);
   
   COMM_check_command(String("SERVO"), MINE_turn_servo);
   

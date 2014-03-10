@@ -74,7 +74,7 @@ static void COMM_parse_command(String command) {
 }
 
 void(* resetFunc) (void) = 0;
-static void COMM_reset() {
+void COMM_reset() {
   Serial.println("COMM module reset!");
   resetFunc();
 }

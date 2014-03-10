@@ -23,7 +23,7 @@ void count()
 {
   switch(count1++)
   {
-    case 20:
+    case 10:
       time2 = micros();
       break;
     case 0:
@@ -59,7 +59,7 @@ byte BeaconDetected()
 {
   if(time2 != 0)
   {
-    freq = ((double)20000)/(double)(time2 - time);
+    freq = ((double)10000)/(double)(time2 - time);
     time2 = 0; 
     count1 = 0;
     return 1;
@@ -71,7 +71,7 @@ byte BeaconTypeDetected()
 {
   if(time2 != 0)
   {
-    freq = ((double)20000)/(double)(time2 - time);
+    freq = ((double)10000)/(double)(time2 - time);
     time2 = 0; 
     count1 = 0;
     if((freq > 2.9) && (freq < 3.1))

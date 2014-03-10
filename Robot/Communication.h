@@ -28,6 +28,7 @@
 void COMM_Init(Timer* t);
 void COMM_Update();
 void COMM_commands();
+void COMM_reset();
 
 void COMM_send_command(String command);
 void COMM_send_command(String command, int arg);
