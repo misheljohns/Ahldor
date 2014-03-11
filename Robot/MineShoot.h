@@ -24,12 +24,12 @@
 #define SERVO_FIND_BEACON_OFFSET 100 
 
 #define EXCHANGE_8_ROT_A 1450
-#define EXCHANGE_5_ROT_A 1700
-#define EXCHANGE_3_ROT_A 1200
+#define EXCHANGE_5_ROT_A 1750
+#define EXCHANGE_3_ROT_A 1150
 
 #define EXCHANGE_8_ROT_B 1450
-#define EXCHANGE_5_ROT_B 1700
-#define EXCHANGE_3_ROT_B 1200  
+#define EXCHANGE_5_ROT_B 1750
+#define EXCHANGE_3_ROT_B 1150  
 
 //order of shooting
 ///doing 8 first for the checkoff

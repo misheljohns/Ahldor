@@ -118,7 +118,7 @@ void COMM_Update() {
   
   if(Serial.available()) {
     usb_rx_buffer = usb_rx_buffer + String((char)Serial.read());
-    Serial.println("USB buffer increased: " + usb_rx_buffer);
+    //Serial.println("USB buffer increased: " + usb_rx_buffer);
     
     int end_command_index = usb_rx_buffer.indexOf(END_COMMAND);
     
@@ -144,4 +144,3 @@ void COMM_commands() {
   // Commands
   COMM_check_command(String("RESET"), COMM_reset);
 }
-

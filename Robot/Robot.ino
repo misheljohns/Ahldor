@@ -239,6 +239,7 @@ void loop() {
         {
           if(exchange_beacon_time != 0)//other beacon has been detected in the past
           {
+            
             //side select code
             travel_time = micros() - exchange_beacon_time;
             Serial.println("travel time: " + String(travel_time));
@@ -251,13 +252,17 @@ void loop() {
             } else {
               map_left = FALSE;
               Serial.println("Choosing map RIGHT");
+
             }
           }
+           
         }
         else if(beacon_type == EXCHANGE_BEACON)
         {
+          
           exchange_beacon_time = micros();
         }
+        
       }
       break;
     
@@ -341,7 +346,7 @@ void loop() {
       }
       
       //////////////////////////////////////////////////////////////untested/////////////////////////////////
-      if(BeaconTypeDetected() == 0) {
+      /*if(BeaconTypeDetected() == 0) {
         
         t.stop(event_mine_coins);
         t.stop(event_shoot);
@@ -353,7 +358,7 @@ void loop() {
         ///rotate to next beacon, pause 
         
         //!!!!How do you clear timers when you set a t.after?
-      }
+      }*/
     
       break;
     case STATE_FIND_NEXT_EX:
