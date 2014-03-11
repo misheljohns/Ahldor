@@ -73,6 +73,7 @@ int event_shoot = 0;
 int shooting = FALSE;
 
 byte exchange_no = 0;
+byte rotating = FALSE;
 
 /*---------------- Arduino Main Functions -------------------*/
 
@@ -162,6 +163,11 @@ void start_mining() {
 void shoot_reset() {
   shooting = FALSE;
 }
+
+void rotate_reset() {
+  rotating = FALSE;
+}
+
 
 void MINE_coins() {
   if(count_presses < server_cost)
@@ -353,26 +359,32 @@ void loop() {
       }
       
        if(BeaconTypeDetected() == 0) {
-        if(shooting)//if it's shooting when we want to turn
-        {
-          t.stop(event_mine_coins);
-          t.stop(event_shoot);
-          rotate_to_shoot();
-          event_shoot = t.after(1000, shoot_wrapper);
+         if(rotating == FALSE)
+         {
+            if(shooting)//if it's shooting when we want to turn
+            {
+              t.stop(event_mine_coins);
+              t.stop(event_shoot);
+              rotate_to_shoot();
+              rotating = TRUE;
+              event_shoot = t.after(1000, shoot_wrapper);
+        
+              //run the coin pressing again, once shooting is done (2 sec wait)
+              event_mine_coins = t.after(2000, MINE_coins);
     
-          //run the coin pressing again, once shooting is done (2 sec wait)
-          event_mine_coins = t.after(2000, MINE_coins);
-
-          shooting = TRUE;
-          t.after(2000,shoot_reset);//1000 after the motor started
-          
-        }
-        else
-        {
-          rotate_to_shoot();
-          
-          t.after(BUTTON_PUSH_RATE, MINE_coins);
-        }
+              shooting = TRUE;
+              t.after(2000,shoot_reset);//1000 after the motor started
+              t.after(500,rotate_reset);
+              
+            }
+            else
+            {
+              rotate_to_shoot();
+              
+              t.after(500+BUTTON_PUSH_RATE, MINE_coins);
+              t.after(500,rotate_reset);
+            }
+         }
         
         
       }
@@ -397,22 +409,22 @@ void rotate_to_shoot()
   if(exchange_no == 0) {
     if(map_left == TRUE)
     {
-     // MINE_turn_servo();
+     MINE_turn_servo(EXCHANGE_5_ROT_A);
     }
     else
     {
-      
+     MINE_turn_servo(EXCHANGE_5_ROT_A);
     }
     exchange_no = 1;
   }
   if(exchange_no == 0) {
    if(map_left == TRUE)
     {
-     // MINE_turn_servo();
+     MINE_turn_servo(EXCHANGE_8_ROT_A);
     }
     else
     {
-      
+     MINE_turn_servo(EXCHANGE_8_ROT_B);
     }
     exchange_no = 1;
   }
