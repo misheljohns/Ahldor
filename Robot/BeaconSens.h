@@ -13,6 +13,10 @@
 #include "Timer.h"
 #include "Communication.h"
 
+/*--------------------- Constants ---------------------------*/
+
+#define PULSE_COUNT 20
+
 /*---------------- Module Functions -------------------------*/
 
 void count();

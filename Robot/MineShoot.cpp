@@ -136,6 +136,8 @@ void MINE_Init(Timer* t) {
   exchangeSelect = 1;
   button_presses = 0;
   
+  MINE_stop_shoot();
+  
   t->every(SERVO_UPDATE_RATE, MINE_update_servo);
   
   Serial.println("MINE module initialized!");

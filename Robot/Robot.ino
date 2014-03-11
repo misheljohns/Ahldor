@@ -38,6 +38,8 @@
 #define STATE_FIND_NEXT_EX 7
 #define STATE_TURNOFF 8
 
+#define SERVER_TO_EXCHANGE_THRESHOLD 2000000
+
 /*------------------ Module Level Variables -----------------*/
 
 // timer library object
@@ -48,7 +50,7 @@ byte state;
 
 // if TRUE, beacon is to left and exchanges to right
 // if FALSE, beacon is to right and exchanges to left
-byte map_left;
+int map_left;
 
 
 //count of button state
@@ -58,6 +60,17 @@ int count_presses;
 long t_previous = 0;
 
 int beacon_type;
+
+//map side detection
+unsigned long travel_time;
+unsigned long exchange_beacon_time;
+
+int timeout_event;
+
+int event_mine_coins = 0;
+int event_shoot = 0;
+
+int shooting = FALSE;
 
 /*---------------- Arduino Main Functions -------------------*/
 
@@ -105,11 +118,14 @@ void setup() {
   
   state = STATE_WAIT_TO_START;
       
-  map_left = TRUE;
+  //map_left = FALSE;
+  
+  map_left = -1;
   server_cost = 0;
   count_presses = 0;
+  
+  exchange_beacon_time = 0;
 }
-
 
 void start_finding_line() {
   Serial.println("Putting into STATE_FIND_THE_LINE!");
@@ -118,12 +134,11 @@ void start_finding_line() {
   state = STATE_FIND_THE_LINE;
 }
 
-
 void start_beacon_sensing() {
   Serial.println("Putting into STATE_ROTATE_TO_SERVER!");
-  MINE_turn_servo(SERVO_POS_CENTER + SERVO_FIND_BEACON_OFFSET);
-  delay(1000);
-  DRIVE_turn_right(80);
+  //MINE_turn_servo(SERVO_POS_CENTER + SERVO_FIND_BEACON_OFFSET);
+  //delay(1000);
+  DRIVE_turn_right(150);
   state = STATE_ROTATE_TO_SERVER;
 }
 
@@ -131,10 +146,17 @@ void start_mining() {
   Serial.println("Putting into STATE_MINE_SHOOT!");
 
   DRIVE_stop();
+  delay(20);
+  
   state = STATE_MINE_SHOOT;
   server_cost = 1;
   count_presses = 0;
   MINE_coins();
+}
+
+void shoot_wrapper() {
+  shooting = FALSE;
+  MINE_shoot();
 }
 
 void MINE_coins() {
@@ -151,12 +173,14 @@ void MINE_coins() {
   {
     //we've pressed enough times, time to shoot now
     //it is already 550ms after the last push. Let's wait another second now.
-    t.after(1000, MINE_shoot);
+    event_shoot = t.after(1000, shoot_wrapper);
     
     //run the coin pressing again, once shooting is done (2 sec wait)
-    t.after(3000, MINE_coins);
+    event_mine_coins = t.after(3000, MINE_coins);
     count_presses = 0;
     server_cost += 1;
+    
+    shooting = TRUE;
   }
 }
 
@@ -180,25 +204,75 @@ void loop() {
       }
           
       break;
+      
     case STATE_ROTATE_TO_SERVER:
       
       beacon_type = BeaconTypeDetected();
-      if(BeaconTypeDetected() == SERVER_BEACON)
+      if(map_left != -1)//if map side has already been set
       {
-        // Counter-rotate for faster braking
-        DRIVE_turn_left(255);
-        delay(10);
-        DRIVE_stop();
-
-        start_finding_line();
+        if(beacon_type == SERVER_BEACON)
+        {
+          
+          if(map_left == TRUE) {
+            DRIVE_turn_right(255);
+            delay(150);
+            DRIVE_turn_left(255);
+            delay(10);
+          } else if (map_left == FALSE) {
+            DRIVE_turn_left(255);
+            delay(300);
+            DRIVE_turn_right(255);
+            delay(10);
+          }
+          
+          DRIVE_stop();
+  
+          //map_left = FALSE;
+          //MINE_select_side(map_left);
+          
+          start_finding_line();
+        }
+      }
+      else //find out what side we are on
+      {
+        if(beacon_type == SERVER_BEACON)
+        {
+          if(exchange_beacon_time != 0)//other beacon has been detected in the past
+          {
+            //side select code
+            travel_time = micros() - exchange_beacon_time;
+            Serial.println("travel time: " + String(travel_time));
+            
+            DRIVE_stop();
+            
+            if(travel_time > SERVER_TO_EXCHANGE_THRESHOLD) {
+              map_left = TRUE;
+              Serial.println("Choosing map LEFT");
+            } else {
+              map_left = FALSE;
+              Serial.println("Choosing map RIGHT");
+            }
+          }
+        }
+        else if(beacon_type == EXCHANGE_BEACON)
+        {
+          exchange_beacon_time = micros();
+        }
       }
       break;
-      
+    
     case STATE_FIND_THE_LINE:
     
-      if(LINE_front()) {             
-        DRIVE_backward(255);
-        delay(60);
+      if(LINE_front()) {   
+        
+        if(map_left == TRUE) {
+          DRIVE_backward(255);
+          delay(30);
+        } else if (map_left == FALSE) {
+          DRIVE_backward(255);
+          delay(100);
+        }
+        
         DRIVE_stop();
         delay(100);
         
@@ -207,7 +281,7 @@ void loop() {
         } else if (map_left == FALSE) {
           DRIVE_turn_left(150);
         }
-      
+        
         state = STATE_ROTATE_TO_ALIGN; 
       Serial.println("STATE_FIND_THE_LINE -> STATE_ROTATE_TO_ALIGN;");  
       }
@@ -223,9 +297,10 @@ void loop() {
         } else if (map_left == FALSE) {
           DRIVE_turn_right(255);
         }
-        delay(170);
+        delay(50);
         
-        DRIVE_stop();
+        //DRIVE_stop();
+        //delay(100000);
         state = STATE_FOLLOW_LINE;
         Serial.println("going to STATE_FOLLOW_LINE;");  
       }
@@ -238,11 +313,11 @@ void loop() {
         DRIVE_backward_right(255);
         DRIVE_backward_left(255);
       } else if(!LINE_back_left() && LINE_back_right()) {
-        DRIVE_backward_right(225);
+        DRIVE_backward_right(205);
         DRIVE_backward_left(255);
       } else if(!LINE_back_right() && LINE_back_left()) {
         DRIVE_backward_right(255);
-        DRIVE_backward_left(225);
+        DRIVE_backward_left(205);
       } else {
         Serial.println("MISSED. OFF THE LINE!!!!");
         //the distance is short enough that we dont have to worry too much about the case where both sensors are off - hardcoding should work
@@ -266,8 +341,15 @@ void loop() {
       }
       
       //////////////////////////////////////////////////////////////untested/////////////////////////////////
-      if(BeaconTypeDetected() == 0)
-      {
+      if(BeaconTypeDetected() == 0) {
+        
+        t.stop(event_mine_coins);
+        t.stop(event_shoot);
+        
+        MINE_rotate_to_shoot();
+        
+        
+        
         ///rotate to next beacon, pause 
         
         //!!!!How do you clear timers when you set a t.after?

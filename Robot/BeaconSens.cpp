@@ -23,7 +23,7 @@ void count()
 {
   switch(count1++)
   {
-    case 10:
+    case PULSE_COUNT:
       time2 = micros();
       break;
     case 0:
@@ -59,7 +59,7 @@ byte BeaconDetected()
 {
   if(time2 != 0)
   {
-    freq = ((double)10000)/(double)(time2 - time);
+    freq = ((double)(PULSE_COUNT * 1000))/(double)(time2 - time);
     time2 = 0; 
     count1 = 0;
     return 1;
@@ -71,12 +71,12 @@ byte BeaconTypeDetected()
 {
   if(time2 != 0)
   {
-    freq = ((double)10000)/(double)(time2 - time);
+    freq = ((double)(PULSE_COUNT * 1000))/(double)(time2 - time);
     time2 = 0; 
     count1 = 0;
-    if((freq > 2.9) && (freq < 3.1))
+    if((freq > 2.8) && (freq < 3.2))
       return EXCHANGE_BEACON;
-    else if((freq > 0.75) && (freq < 0.95))
+    else if((freq > 0.70) && (freq < 1.00))
       return SERVER_BEACON;
     else 
       return UNKNOWN_BEACON_FREQ;

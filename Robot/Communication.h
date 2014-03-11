@@ -16,7 +16,7 @@
 
 #define COMM_UPDATE_RATE 20
 
-#define USB_BAUD 115200
+#define USB_BAUD 9600
 
 #define END_COMMAND '\n'
 #define DELIMITER ' '

@@ -17,17 +17,17 @@
 /*---------------- Module Defines ---------------------------*/
 
 //Servo angles
-#define SERVO_POS_CENTER 1500
+#define SERVO_POS_CENTER 1450
 
 //the angle at which the top should be rotated to point at the beacon 
 //when rotating initially,so that the bot points towards the line
 #define SERVO_FIND_BEACON_OFFSET 100 
 
-#define EXCHANGE_8_ROT_A 1500
+#define EXCHANGE_8_ROT_A 1450
 #define EXCHANGE_5_ROT_A 1700
 #define EXCHANGE_3_ROT_A 1200
 
-#define EXCHANGE_8_ROT_B 1500
+#define EXCHANGE_8_ROT_B 1450
 #define EXCHANGE_5_ROT_B 1700
 #define EXCHANGE_3_ROT_B 1200  
 
