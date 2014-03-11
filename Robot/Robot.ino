@@ -72,6 +72,8 @@ int event_shoot = 0;
 
 int shooting = FALSE;
 
+byte exchange_no = 0;
+
 /*---------------- Arduino Main Functions -------------------*/
 
 void MAIN_print_enable_switch() {
@@ -154,9 +156,11 @@ void start_mining() {
   MINE_coins();
 }
 
-void shoot_wrapper() {
+
+
+
+void shoot_reset() {
   shooting = FALSE;
-  MINE_shoot();
 }
 
 void MINE_coins() {
@@ -176,13 +180,16 @@ void MINE_coins() {
     event_shoot = t.after(1000, shoot_wrapper);
     
     //run the coin pressing again, once shooting is done (2 sec wait)
-    event_mine_coins = t.after(3000, MINE_coins);
+    event_mine_coins = t.after(2000, MINE_coins);
     count_presses = 0;
     server_cost += 1;
     
     shooting = TRUE;
+    t.after(2000,shoot_reset);//1000 after the motor started
   }
 }
+
+
 
 void loop() {
   
@@ -345,20 +352,30 @@ void loop() {
         Serial.println("No longer pressed against wall!");
       }
       
-      //////////////////////////////////////////////////////////////untested/////////////////////////////////
-      /*if(BeaconTypeDetected() == 0) {
+       if(BeaconTypeDetected() == 0) {
+        if(shooting)//if it's shooting when we want to turn
+        {
+          t.stop(event_mine_coins);
+          t.stop(event_shoot);
+          rotate_to_shoot();
+          event_shoot = t.after(1000, shoot_wrapper);
+    
+          //run the coin pressing again, once shooting is done (2 sec wait)
+          event_mine_coins = t.after(2000, MINE_coins);
+
+          shooting = TRUE;
+          t.after(2000,shoot_reset);//1000 after the motor started
+          
+        }
+        else
+        {
+          rotate_to_shoot();
+          
+          t.after(BUTTON_PUSH_RATE, MINE_coins);
+        }
         
-        t.stop(event_mine_coins);
-        t.stop(event_shoot);
         
-        MINE_rotate_to_shoot();
-        
-        
-        
-        ///rotate to next beacon, pause 
-        
-        //!!!!How do you clear timers when you set a t.after?
-      }*/
+      }
     
       break;
     case STATE_FIND_NEXT_EX:
@@ -375,4 +392,28 @@ void loop() {
 }
 
 
-
+void rotate_to_shoot()
+{//set this
+  if(exchange_no == 0) {
+    if(map_left == TRUE)
+    {
+     // MINE_turn_servo();
+    }
+    else
+    {
+      
+    }
+    exchange_no = 1;
+  }
+  if(exchange_no == 0) {
+   if(map_left == TRUE)
+    {
+     // MINE_turn_servo();
+    }
+    else
+    {
+      
+    }
+    exchange_no = 1;
+  }
+}
